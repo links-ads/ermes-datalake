@@ -1,0 +1,748 @@
+{
+    "scheming_version": 1,
+        "dataset_type": "dataset",
+        "about":"Metadata schema INSPIRE",
+        "about_url": "https://inspire.ec.europa.eu/",
+        "dataset_fields": [
+        {
+            "field_name": "title",
+            "label": "Title",
+            "display_property": "dcat:Dataset/dct:title",
+            "validators": "if_empty_same_as(name) unicode",
+            "form_snippet": "large_text.html",
+            "form_attrs": {"data-module": "slug-preview-target"},
+            "form_placeholder": "Name by which the cited resource is known"
+        },
+        {
+            "field_name": "name",
+            "label": "Unique resource identifier",
+            "validators": "not_empty unicode name_validator package_name_validator",
+            "form_snippet": "slug.html",
+            "form_placeholder": "eg. my-dataset"
+        },
+        {
+            "field_name": "author",
+            "label": "Author",
+            "validators": "author_fill",
+            "display_snippet": null,
+            "form_snippet": null
+        },
+        {
+            "field_name": "author_email",
+            "label": "Author Email",
+            "validators": "author_email_fill",
+            "display_snippet": null,
+            "form_snippet": null
+          },
+          {
+            "field_name": "notes",
+            "label": "Abstract",
+            "display_property": "dcat:Dataset/dct:description",
+            "form_snippet": "markdown.html",
+            "validators": "not_empty",
+            "form_placeholder": "Brief narrative summary of the content of the resource(s)"
+        },
+          {
+            "field_name": "identification_ResourceType",
+            "label": "Resource type",
+            "preset": "select",
+            "form_snippet": "select.html",
+            "required": true,
+            "choices": [
+                {
+                  "value": "dataset",
+                  "label": "Dataset"
+                },
+              {
+                "value": "series",
+                "label": "Series"
+              },
+              {
+                "value": "service",
+                "label": "Service"
+              },
+              {
+                "value": "nonGeographicDataset",
+                "label": "Non Geographic Dataset"
+              }
+          ],
+            "display_property": "dcat:Dataset/dct:type",
+            "validators": "not_empty"
+        },
+        {
+          "field_name": "datatype_id",
+          "label": "DataType ID",
+          "preset": "datatype",
+          "form_snippet": null
+        },
+        {
+          "field_name": "owner_org",
+          "label": "Organization",
+          "display_property": "dct:publisher",
+          "validators": "owner_org_validator unicode",
+          "form_snippet": "organization.html"
+      },
+          {
+            "field_name": "identification_CoupledResource",
+            "label": "Coupled Resource",
+            "display_snippet": "link.html",
+            "help_text": "Resource identifier or URL of the MD_DataIdentification object (leave blank if dataset or series)"
+        },
+          {
+            "field_name": "identification_ResourceLanguage",
+            "label": "Resource language",
+            "form_placeholder": "Language(s) used within the datasets",
+            "preset": "select",
+            "form_snippet": "select.html",
+            "required": true,
+            "choices": 
+            [
+                {
+                    "label":"English",
+                    "value": "eng"
+                },
+                {
+              "label":"Bulgarian",
+              "value": "bul"
+          },
+          {
+              "label":"Irish",
+              "value": "gle"
+          },
+          {
+              "label":"Croatian",
+              "value": "hrv"
+          },
+          {
+              "label":"Italian",
+              "value": "ita"
+          },
+          {
+              "label":"Czech",
+              "value": "cze"
+          },
+          {
+              "label":"Latvian",
+              "value": "lav"
+          },
+          {
+              "label":"Danish",
+              "value": "dan"
+          },
+          {
+              "label":"Lithuanian",
+              "value": "lit"
+          },
+          {
+              "label":"Dutch",
+              "value": "dut"
+          },
+          {
+              "label":"Maltese",
+              "value": "mlt"
+          },
+          {
+              "label":"Polish",
+              "value": "pol"
+          },
+          {
+              "label":"Estonian",
+              "value": "est"
+          },
+          {
+              "label":"Portuguese",
+              "value": "por"
+          },
+          {
+              "label":"Finnish",
+              "value": "fin"
+          },
+          {
+              "label":"Romanian",
+              "value": "rum"
+          },
+          {
+              "label":"French",
+              "value": "fre"
+          },
+          {
+              "label":"Slovak",
+              "value": "slo"
+          },
+          {
+              "label":"German",
+              "value": "ger"
+          },
+          {
+              "label":"Slovenian",
+              "value": "slv"
+          },
+          {
+              "label":"Greek",
+              "value": "gre"
+          },
+          {
+              "label":"Spanish",
+              "value": "spa"
+          },
+          {
+              "label":"Hungarian",
+              "value": "hun"
+          },
+          {
+              "label":"Swedish",
+              "value": "swe"
+          }]
+          },
+        {
+          "field_name": "classification_TopicCategory",
+          "label": "Topic category",
+          "form_placeholder": "Main theme(s) of the dataset",
+          "preset": "select",
+          "help_text": "REQUIRED for spatial dataset",
+          "form_snippet": "select.html",
+          "validators": "ignore_missing scheming_required scheming_choices scheming_required_for_spatial",
+          "choices":
+          [
+              {
+                  "label": "farming",
+                  "value": "farming"
+              },
+              {
+                  "label": "biota",
+                  "value": "biota"
+              },
+              {
+                  "label": "boundaries",
+                  "value": "boundaries"
+              },
+              {
+                  "label": "climatologyMeteorologyAtmosphere",
+                  "value": "climatologyMeteorologyAtmosphere"
+              },
+              {
+                  "label": "economy",
+                  "value": "economy"
+              },
+              {
+                  "label": "elevation",
+                  "value": "elevation"
+              },
+              {
+                  "label": "environment",
+                  "value": "environment"
+              },
+              {
+                  "label": "geoscientificInformation",
+                  "value": "geoscientificInformation"
+              },
+              {
+                  "label": "health",
+                  "value": "health"
+              },
+              {
+                  "label": "imageryBaseMapsEarthCover",
+                  "value": "imageryBaseMapsEarthCover"
+              },
+              {
+                  "label": "intelligenceMilitary",
+                  "value": "intelligenceMilitary"
+              },
+              {
+                  "label": "inlandWaters",
+                  "value": "inlandWaters"
+              },
+              {
+                  "label": "location",
+                  "value": "location"
+              },
+              {
+                  "label": "oceans",
+                  "value": "oceans"
+              },
+              {
+                  "label": "planningCadastre",
+                  "value": "planningCadastre"
+              },
+              {
+                  "label": "society",
+                  "value": "society"
+              },
+              {
+                  "label": "structure",
+                  "value": "structure"
+              },
+              {
+                  "label": "transportation",
+                  "value": "transportation"
+              },
+              {
+                  "label": "utilitiesCommunication",
+                  "value": "utilitiesCommunication"
+              },
+              {
+                  "label": "extraTerrestrial",
+                  "value": "extraTerrestrial"
+              }]
+      },
+        {
+            "field_name": "keyword_KeywordValue",
+            "label": "Keyword value",
+            "preset": "tag_string_autocomplete",
+            "display_property": "dcat:Dataset/dct:keyword",
+            "validators": "not_empty tag_string_convert convert_strings_to_tags(ontology)",
+            "form_placeholder": "type to auto-complete",
+            "required": true,
+            "form_attrs": {
+                "data-module": "autocomplete",
+                "data-module-tags": "",
+                "data-module-source": "/api/2/util/tag/autocomplete?incomplete=?"
+            }
+        },
+      {
+        "field_name": "keyword_OriginatingControlledVocabulary",
+        "label": "Originating controlled vocabulary",
+        "help_text": "Name of the formally registered thesaurus or a similar authoritative source of keywords",
+        "preset": "select",
+        "form_snippet": "select.html",
+        "required": true,
+          "choices":
+          [
+              {
+                  "label": "Ontology",
+                  "value": "ontology"
+              }
+          ]
+      },
+      {
+          "field_name": "data_temporal_extent_begin_date",
+          "label": "Temporal Reference - start date",
+          "help_text": "Earliest record in data resources",
+          "help_inline": true,
+          "required": true,
+          "preset": "datetime_tz",
+          "display_property": "dcat:Dataset/dct:temporal"
+      },
+      {
+          "field_name": "data_temporal_extent_end_date",
+          "label": "Temporal Reference - end date",
+          "help_inline": true,
+          "help_text": "Latest record in data resources",
+          "required": true,
+          "preset": "datetime_tz",
+          "display_property": "dcat:Dataset/dct:temporal"
+      },
+      {
+          "field_name": "temporalReference_dateOfPublication",
+          "label": "Temporal Reference - Publication",
+          "help_text": "Date of publication",
+          "required": true,
+          "help_inline": true,
+          "preset": "datetime_tz",
+          "display_property": "dcat:Dataset/dct:temporal"
+      },
+      {
+          "field_name": "temporalReference_dateOfLastRevision",
+          "label": "Temporal Reference - Last Revision",
+          "help_text": "Date of Last Revision",
+          "required": true,
+          "help_inline": true,
+          "preset": "datetime_tz",
+          "display_property": "dcat:Dataset/dct:temporal"
+      },
+      {
+          "field_name": "temporalReference_dateOfCreation",
+          "label": "Temporal Reference - Creation",
+          "help_text": "Date of Creation",
+          "help_inline": true,
+          "required": true,
+          "preset": "datetime_tz",
+          "display_property": "dcat:Dataset/dct:temporal"
+      },
+      {
+          "field_name": "quality_and_validity_lineage",
+          "label": "Quality and Validity Lineage",
+          "help_text": "REQUIRED for spatial dataset. General explanation of the data producer’s knowledge about the lineage of a dataset",
+          "validators": "scheming_required_for_spatial",
+          "form_placeholder": "Quality approved"
+      },
+      {
+          "field_name": "quality_and_validity_spatial_resolution_latitude",
+          "label": "Spatial Resolution - Latitude",
+          "help_text": "REQUIRED for spatial dataset",
+          "form_placeholder": "latitude",
+          "validators":"scheming_required_for_spatial"
+      },
+      {
+          "field_name": "quality_and_validity_spatial_resolution_longitude",
+          "label": "Spatial Resolution - Longitude",
+          "help_text": "REQUIRED for spatial dataset",
+          "form_placeholder": "longitude",
+          "validators": "scheming_required_for_spatial"
+      },
+      {
+          "field_name": "quality_and_validity_spatial_resolution_scale",
+          "label": "Spatial Resolution - Scale",
+          "help_text": "REQUIRED for spatial dataset",
+          "form_placeholder": "scale",
+          "validators":"scheming_required_for_spatial"
+        },
+      {
+          "field_name": "quality_and_validity_spatial_resolution_measureunit",
+          "label": "Spatial Resolution - Measure Unit",
+          "form_placeholder": "measure unit",
+          "preset": "select",
+          "help_text": "REQUIRED for spatial dataset",
+          "form_snippet": "select.html",
+          "validators": "scheming_required scheming_choices ignore_missing scheming_required_for_spatial",
+          "choices":[
+              { "value": "m" },
+              { "value": "mm"},
+              { "value": "cm"},
+              { "value": "m3"},
+              { "value": "degree"}
+          ]
+      },
+      {
+          "field_name": "conformity_specification_title",
+          "label": "Conformity Specification - Title",
+          "help_text": "REQUIRED for spatial dataset",
+          "validators": "scheming_required_for_spatial"
+      },
+      {
+          "field_name": "conformity_specification_dateType",
+          "label": "Conformity Specification - Date Type",
+          "preset": "select",
+          "help_text": "REQUIRED for spatial dataset",
+          "form_snippet": "select.html",
+          "validators": "scheming_required scheming_choices ignore_missing scheming_required_for_spatial",
+          "choices":[
+              {
+              "label": "Creation",
+              "value": "creation"
+              },
+              {
+              "label": "Publication",
+              "value": "publication"
+              },
+              {
+              "label": "Revision",
+              "value": "revision"
+               }
+          ]
+      },
+      {
+          "field_name": "conformity_specification_date",
+          "label": "Conformity Specification - Date",
+          "validators":"scheming_isodatetime_tz convert_to_json_if_datetime scheming_required_for_spatial",
+          "help_inline": true,
+          "help_text": "REQUIRED for spatial dataset",
+          "preset": "datetime_tz"
+      },
+      {
+          "field_name": "conformity_degree",
+          "label": "Conformity Degree",
+          "preset": "select",
+          "form_snippet": "select.html",
+          "help_text": "REQUIRED for spatial dataset",
+          "validators": "scheming_required scheming_choices ignore_missing scheming_required_for_spatial",
+          "choices":[
+              {
+              "label": "Conformant",
+              "value": "true"
+              },
+              {
+              "label": "Not Conformant",
+              "value": "false"
+              },
+              {
+              "label": "Unknown",
+              "value": "null"
+              }
+          ]
+      },
+      {
+          "field_name": "constraints_conditions_for_access_and_use",
+          "label": "Conditions for Access and Use",
+          "form_snippet": "license.html",
+          "required": true
+      },
+      {
+          "field_name": "license_id",
+          "label": "Conditions for Access and Use",
+          "validators": "license_fill()",
+          "display_snippet": null,
+          "form_snippet": null
+      },
+      {
+          "field_name": "constraints_limitation_on_public_access",
+          "label": "Limitation on Public Access"
+      },
+      {
+          "field_name": "responsable_organization_name",
+          "label": "Responsable organization name",
+          "help_text": "Identification of, and means of communication with, person(s) and organization(s) associated with the resource(s)",
+          "help_inline": true,
+          "form_placeholder": "Joe Bloggs",
+          "display_property": "dc:contributor",
+          "validators": "not_empty"
+      },
+      {
+          "field_name": "responsable_organization_email",
+          "label": "Responsable organization email",
+          "help_text": "Identification of, and means of communication with, person(s) and organization(s) associated with the resource(s)",
+          "form_placeholder": "joe@theme.com",
+          "display_property": "vcard:hasEmail",
+          "display_snippet": "email.html",
+          "validators": "not_empty"
+      },
+      {
+          "field_name": "responsable_organization_role",
+          "label": "Responsable organization role",
+          "help_text": "Identification of, and means of communication with, person(s) and organization(s) associated with the resource(s)",
+          "help_inline": true,
+          "display_property": "dc:contributor",
+          "preset": "select",
+          "required": true,
+          "form_snippet": "select.html",
+          "choices":[
+              {
+              "label": "author",
+              "value": "author"
+              },
+              {
+              "label": "publisher",
+              "value": "publisher"
+              },
+              {
+              "label": "unknown",
+              "value": "unknown"
+              }
+          ]
+      },
+      {
+          "field_name": "point_of_contact_name",
+          "label": "Point of Contact - Organization Name",
+          "help_text": "Identification of, and means of communication with, person(s) and organization(s) associated with the resource(s)",
+          "help_inline": true,
+          "form_placeholder": "LINKS",
+          "display_property": "vcard:fn",
+          "validators": "not_empty"
+      },
+      {
+          "field_name": "point_of_contact_email",
+          "label": "Point of Contact - Organization Email",
+          "help_text": "Identification of, and means of communication with, person(s) and organization(s) associated with the resource(s)",
+          "form_placeholder": "joe@theme.com",
+          "display_property": "vcard:hasEmail",
+          "display_snippet": "email.html",
+          "validators": "not_empty"
+      },
+      {
+          "field_name": "temporalReference_date",
+          "label": "Metadata date",
+          "help_text": "Date that the metadata was created",
+          "help_inline": true,
+          "required": true,
+          "preset": "datetime_tz",
+          "display_property": "dcat:Dataset/dct:issued"
+     },
+      {
+          "field_name": "metadata_language",
+          "label": "Metadata language",
+          "form_placeholder": "Language(s) used within the datasets",
+          "display_property": "dct:language",
+          "required": true,
+          "preset": "select",
+          "form_snippet": "select.html",
+          "choices": 
+              [
+                {
+                    "label":"English",
+                    "value": "eng"
+                },  
+                {
+                "label":"Bulgarian",
+                "value": "bul"
+            },
+            {
+                "label":"Irish",
+                "value": "gle"
+            },
+            {
+                "label":"Croatian",
+                "value": "hrv"
+            },
+            {
+                "label":"Italian",
+                "value": "ita"
+            },
+            {
+                "label":"Czech",
+                "value": "cze"
+            },
+            {
+                "label":"Latvian",
+                "value": "lav"
+            },
+            {
+                "label":"Danish",
+                "value": "dan"
+            },
+            {
+                "label":"Lithuanian",
+                "value": "lit"
+            },
+            {
+                "label":"Dutch",
+                "value": "dut"
+            },
+            {
+                "label":"Maltese",
+                "value": "mlt"
+            },
+            {
+                "label":"Polish",
+                "value": "pol"
+            },
+            {
+                "label":"Estonian",
+                "value": "est"
+            },
+            {
+                "label":"Portuguese",
+                "value": "por"
+            },
+            {
+                "label":"Finnish",
+                "value": "fin"
+            },
+            {
+                "label":"Romanian",
+                "value": "rum"
+            },
+            {
+                "label":"French",
+                "value": "fre"
+            },
+            {
+                "label":"Slovak",
+                "value": "slo"
+            },
+            {
+                "label":"German",
+                "value": "ger"
+            },
+            {
+                "label":"Slovenian",
+                "value": "slv"
+            },
+            {
+                "label":"Greek",
+                "value": "gre"
+            },
+            {
+                "label":"Spanish",
+                "value": "spa"
+            },
+            {
+                "label":"Hungarian",
+                "value": "hun"
+            },
+            {
+                "label":"Swedish",
+                "value": "swe"
+            }]
+      },
+      {
+          "field_name": "coordinatesystemreference_code",
+          "label": "Coordinate system reference - Code",
+          "form_placeholder": "4326",
+          "help_text": "REQUIRED for spatial dataset",
+          "validators":"scheming_required_for_spatial"
+        },
+        
+      {
+          "field_name": "coordinatesystemreference_codespace",
+          "label": "Coordinate system reference - Code space",
+          "form_placeholder": "EPSG",
+          "help_text": "REQUIRED for spatial dataset",
+          "validators":"scheming_required_for_spatial"
+      },  
+        {
+            "field_name": "spatial",
+            "label": "Geospatial coverage",
+            "display_property": "dcat:Dataset/dct:spatial",
+            "form_placeholder": "Paste a valid GeoJSON geometry",
+            "validators": "json_to_string scheming_required_for_spatial",
+            "form_snippet":"spatial.html",
+            "display_snippet":"spatial.html",
+            "choices": [
+            {"label":"Europe",
+                "value":{
+                    "type":"MultiPolygon",
+                    "coordinates": [[[
+                        [-13.095703125, 34.74161249883172],
+                      [46.142578125, 34.74161249883172],
+                      [46.142578125, 69.62651016802958],
+                      [-13.095703125, 69.62651016802958],
+                      [-13.095703125, 34.74161249883172]
+                  ]]]
+                }
+            }
+            ]
+        },
+        {
+            "field_name": "external_attributes",
+            "label": "External attributes",
+            "form_placeholder": "Insert a valid JSON object",
+            "preset": "json_object"
+        }
+    ],
+        "resource_fields": [
+        {
+            "field_name": "url",
+            "label": "URL",
+            "help_text": "Resource file or download URL",
+            "help_inline": true,
+            "validators": "unicode remove_whitespace",
+            "form_snippet": "upload.html",
+            "form_placeholder": "http://theme.com/my-data.csv",
+            "upload_field": "upload",
+            "upload_clear": "clear_upload",
+            "upload_label": "File"
+        },
+        {
+            "field_name": "datatype_resource",
+            "label": "Datatype id",
+            "form_placeholder": "e.g. 32001",
+            "required":true
+        },
+        {
+            "field_name": "name",
+            "label": "Name",
+            "form_placeholder": "e.g. Observations of X at Y"
+        },
+        {
+          "field_name": "file_date_start",
+          "label": "File start date",
+          "form_snippet": "datetime_tz.html",
+          "display_snippet": "datetime_tz.html",
+          "validators": "scheming_isodatetime_tz_resource convert_to_json_if_datetime datetime_start_fill()"
+        },
+        {
+            "field_name": "file_date_end",
+            "label": "File end date",
+            "form_snippet": "datetime_tz.html",
+            "display_snippet": "datetime_tz.html",
+            "validators": "scheming_isodatetime_tz_resource convert_to_json_if_datetime datetime_end_fill()"
+        },
+        {
+            "field_name": "format",
+            "label": "Format",
+            "display_property": "dcat:Dataset/dcat:distribution/dcat:Distribution/dcat:format",
+            "preset": "resource_format_autocomplete"
+        }
+    ]
+  }
+  
