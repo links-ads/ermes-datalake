@@ -1,0 +1,23 @@
+daterangepicker-module:
+  filters: rjsmin
+  output: datesearch_wg/daterangepicker-module.js
+  contents:
+    - daterangepicker-module.js
+
+daterangepicker:
+  filters: rjsmin
+  output: datesearch_wg/daterangepicker.js
+  contents:
+    - daterangepicker.js
+
+moment:
+  filters: rjsmin
+  output: datesearch_wg/moment.js
+  contents:
+    - moment.js
+
+daterangepicker-bs3:
+  filters: cssrewrite
+  output: datesearch_wg/daterangepicker-bs3.css
+  contents:
+    - daterangepicker-bs3.css

@@ -1,0 +1,4 @@
+# Install hidegroups
+RUN mkdir "${APP_DIR}/src/ckanext-hidegroups/"
+ADD ./ckanext-hidegroups/ ${APP_DIR}/src/ckanext-hidegroups/
+RUN pip install -e "${APP_DIR}/src/ckanext-hidegroups/"
