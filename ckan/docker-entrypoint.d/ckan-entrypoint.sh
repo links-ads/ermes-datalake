@@ -4,10 +4,6 @@ set -e
 
 config="${APP_DIR}/ckan.ini"
 
-# Put a placeholder value for ckan.datapusher.api_token to be able to run commands,
-# will be updated later
-ckan config-tool ${config} ckan.datapusher.api_token=xxx
-
 # Set up the Secret key used by Beaker and Flask
 # This can be overriden using a CKAN___BEAKER__SESSION__SECRET env var
 if grep -E "beaker.session.secret ?= ?$" ckan.ini
@@ -73,8 +69,6 @@ ckan config-tool ${config} -s "app:main" \
         "ckan.notify.mq.queue_name = ${RABBIT_QUEUE}" \
         "ckan.notify.mq.app_id = ${RABBIT_NOTIFY_APPID}" \
         "ckan.notify.mq.rk_prefix = ${RABBIT_NOTIFY_ROUTINGKEY_PREFIX}"
-        # "ckan.datastore.write_url = ${CKAN_DATASTORE_WRITE_URL}" \
-        # "ckan.plugins = notify theme datesearch datatype authcheck stats text_view image_view recline_view spatial_metadata spatial_query resource_proxy geo_view geojson_view shp_view scheming_datasets cloudstorage hidegroups oauth2"  \
 
 
 # Initializes the database

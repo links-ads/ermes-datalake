@@ -9,7 +9,7 @@ services:
       args:
         - TZ=${TZ}
     env_file:
-      - .env
+      - env/.env
     links:
       - db
       - solr
@@ -19,7 +19,7 @@ services:
     volumes:
       - ckan_storage:/var/lib/ckan
     networks:
-      - datalake-ckan-net
+      - datalake-net
     restart: unless-stopped
 
   db:
@@ -39,7 +39,7 @@ services:
     ports:
       - 127.0.0.1:${DB_EXPOSE_PORT}:5432/tcp
     networks:
-      - datalake-ckan-net
+      - datalake-net
     restart: unless-stopped
 
   solr:
@@ -48,13 +48,13 @@ services:
     volumes:
       - solr_data:/opt/solr/server/solr/ckan/data/index
     networks:
-      - datalake-ckan-net
+      - datalake-net
     restart: unless-stopped
 
   redis:
     image: redis:alpine
     networks:
-      - datalake-ckan-net
+      - datalake-net
     restart: unless-stopped
     
 volumes:
@@ -63,4 +63,4 @@ volumes:
   solr_data:
 
 networks:
-  datalake-ckan-net:
+  datalake-net:
