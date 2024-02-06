@@ -6,7 +6,6 @@
 
 The tools used in this repository are
 
-* [CKAN](https://ckan.org/)
 * [Docker](https://www.docker.com/)
 
 ## Main components
@@ -15,7 +14,7 @@ The tools used in this repository are
 
 * **Solr** version 6.2 packaged for CKAN and with some customizations (see [solr](https://hub.docker.com/r/ckan/solr)). Solr provides distributed indexing, replication and load-balanced querying, automated failover and recovery, centralized configuration and more.
 
-* **PostgreSQL+PostGIS** PostgreSQL version 11 with PostGIS 3.1 (see [postgis](https://hub.docker.com/r/postgis/postgis)). PostGIS is an open source software program that adds support for geographic objects to the PostgreSQL object-relational database. This component is the db where all the information will be stored.
+* **PostgreSQL+PostGIS** PostgreSQL version 12 with PostGIS 3.4 (see [postgis](https://hub.docker.com/r/postgis/postgis)). PostGIS is an open source software program that adds support for geographic objects to the PostgreSQL object-relational database. This component is the db where all the information will be stored.
 
 * **Redis** pulled in as a dependency from its [official Docker repository](https://hub.docker.com/_/redis). Redis is an open source (BSD licensed), in-memory data structure store, used as a database, cache, and message broker.
 
@@ -34,11 +33,11 @@ The base version of Ckan has been enhanced with several extensions in order to a
 * **authcheck** - Check if the user has the permission to modify / delete a certain dataset (Only the creator can modify/delete its own dataset)
 * **notify** - Listen for modification on resources and send notification to a rabbit queue
 * **datatype** - Collect datatype ids from resources and put the list in the metadata description
-* **theme** - Modify the GUI
+
 
 Each plugin can be modified and adapted to new scopes, and new plugins can be develop to add other functionalities! In [this repository](https://extensions.ckan.org/) a plenty of plugins are published.
 
-## How to run all this stuff
+## How to run
 
 In this repository, CKAN and its related tools are redistributed as a set of Docker containers interacting with one each other.
 
@@ -52,15 +51,23 @@ To run the containers:
 
 1. Clone this repository
 2. `cd datacatalog`
-3. If you are using Winzoz without WSL you may need to convert EOF from CRLF to LF `find . -type f -print0 | xargs -0 dos2unix`
-4. `docker compose up -d --build`
+3. `docker compose build`
+4. `docker compose up -d`
 5. You can follow the log stream running `docker-compose logs -f` (then ctrl+c to exit).
 
+## Development
+To run the containers in dev mode (enabling CKAN `DEBUG` logs):
+
+1. `docker compose -f docker-compose.yml -f docker-compose.dev.yml build`
+2. `docker compose -f docker-compose.yml -f docker-compose.dev.yml up`
+
 ## Credentials
-After a while you can open the CKAN home [http://localhost:5000](http://localhost:5000) and login with the credentials set in the `.env` file. If you are using the plugin oauth2 the login page will be the one speciefied in the env file.
+After a while you can open the CKAN home [http://localhost:5001](http://localhost:5001) and login with the credentials set in the `env/.env` file. If you are using the plugin oauth2 the login page will be the one speciefied in the env file.
 
 ### OAUTH2 plugin
 The plugin allows to use oauth2 server to authenticate users. The CKAN istance will create in any case a internal table with its users, and it is filled at the first login via web interface by the user. For this reason, once you created the user in the oauth2 portal, you need to login via web interface before using the API. Otherwise it will not work.
+
+To test this plugin in local we advice to use [ngrok](https://ngrok.com/) to simulate SSL on localhost.
 
 
 ### Make a user sysadmin
@@ -93,3 +100,6 @@ More information [here](https://github.com/smallmedia/iod-ckan/issues/20).
 - if API fails with 409 error, it is possibly a validation error in the request, ckan should return the field for which the error occurred
 - if no results are shown, it is probably becasue the authentication is wrong (indeed, private datasets are shown only to authenticated users)
 
+### Map preview doesn't work
+Yes, this is a known issue. The plugin has been updated with a different type of map but the latest version of it is not compatible with this dockerized version of ckan. Waiting for the fix.
+[Here](https://github.com/ckan/ckanext-spatial/issues/317) more info for the solution.
