@@ -38,6 +38,4 @@ service_proxy.add_url_rule(
     "/dataset/<id>/resource/<resource_id>/service_proxy",
     view_func=proxy_service,
 )
-service_proxy.add_url_rule(
-    "/basemap_service/<map_id>", view_func=proxy_service_url
-)
+service_proxy.add_url_rule("/basemap_service/<map_id>", view_func=proxy_service_url)

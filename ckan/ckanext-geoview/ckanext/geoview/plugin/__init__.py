@@ -25,7 +25,7 @@ log = logging.getLogger(__name__)
 
 
 class GeoViewBase(p.SingletonPlugin):
-    """This base class is for view extensions. """
+    """This base class is for view extensions."""
 
     p.implements(p.IResourceView, inherit=True)
     p.implements(p.IConfigurer, inherit=True)
@@ -35,21 +35,15 @@ class GeoViewBase(p.SingletonPlugin):
     same_domain = False
 
     def configure(self, config):
-        basemapConfigFile = toolkit.config.get(
-            "ckanext.geoview.basemaps", None
-        )
-        self.basemapsConfig = basemapConfigFile and utils.load_basemaps(
-            basemapConfigFile
-        )
+        basemapConfigFile = toolkit.config.get("ckanext.geoview.basemaps", None)
+        self.basemapsConfig = basemapConfigFile and utils.load_basemaps(basemapConfigFile)
 
     def update_config(self, config):
         toolkit.add_public_directory(config, "../public")
         toolkit.add_template_directory(config, "../templates")
         toolkit.add_resource("../public", "ckanext-geoview")
 
-        self.proxy_enabled = "resource_proxy" in toolkit.config.get(
-            "ckan.plugins", ""
-        )
+        self.proxy_enabled = "resource_proxy" in toolkit.config.get("ckan.plugins", "")
 
 
 class OLGeoView(GeoViewMixin, GeoViewBase):
@@ -98,16 +92,12 @@ class OLGeoView(GeoViewMixin, GeoViewBase):
 
         # Guess from file extension
         if not format_lower and data_dict["resource"].get("url"):
-            format_lower = self._guess_format_from_extension(
-                data_dict["resource"]["url"]
-            )
+            format_lower = self._guess_format_from_extension(data_dict["resource"]["url"])
 
         if not format_lower:
             return False
 
-        view_formats = toolkit.config.get(
-            "ckanext.geoview.ol_viewer.formats", ""
-        )
+        view_formats = toolkit.config.get("ckanext.geoview.ol_viewer.formats", "")
         if view_formats:
             view_formats = view_formats.split(" ")
         else:
@@ -127,11 +117,7 @@ class OLGeoView(GeoViewMixin, GeoViewBase):
     def _guess_format_from_extension(self, url):
         try:
             parsed_url = urlparse(url)
-            format_lower = (
-                os.path.splitext(parsed_url.path)[1][1:]
-                .encode("ascii", "ignore")
-                .lower()
-            )
+            format_lower = os.path.splitext(parsed_url.path)[1][1:].encode("ascii", "ignore").lower()
         except ValueError as e:
             log.error("Invalid URL: {0}, {1}".format(url, e))
             format_lower = ""
@@ -144,9 +130,7 @@ class OLGeoView(GeoViewMixin, GeoViewBase):
         same_domain = on_same_domain(data_dict)
 
         if not data_dict["resource"].get("format"):
-            data_dict["resource"][
-                "format"
-            ] = self._guess_format_from_extension(data_dict["resource"]["url"])
+            data_dict["resource"]["format"] = self._guess_format_from_extension(data_dict["resource"]["url"])
 
         if self.proxy_enabled and not same_domain:
             proxy_url = proxy.get_proxified_resource_url(data_dict)
@@ -157,8 +141,7 @@ class OLGeoView(GeoViewMixin, GeoViewBase):
 
         gapi_key = toolkit.config.get("ckanext.geoview.gapi_key")
         return {
-            "resource_view_json": "resource_view" in data_dict
-            and json.dumps(data_dict["resource_view"]),
+            "resource_view_json": "resource_view" in data_dict and json.dumps(data_dict["resource_view"]),
             "proxy_service_url": proxy_service_url,
             "proxy_url": proxy_url,
             "gapi_key": gapi_key,
@@ -206,12 +189,8 @@ class GeoJSONView(GeoViewBase):
 
         self.same_domain = data_dict["resource"].get("on_same_domain")
         if self.proxy_enabled and not self.same_domain:
-            data_dict["resource"]["original_url"] = data_dict["resource"].get(
-                "url"
-            )
-            data_dict["resource"]["url"] = proxy.get_proxified_resource_url(
-                data_dict
-            )
+            data_dict["resource"]["original_url"] = data_dict["resource"].get("url")
+            data_dict["resource"]["url"] = proxy.get_proxified_resource_url(data_dict)
 
     # ITemplateHelpers
 
@@ -253,12 +232,8 @@ class WMTSView(GeoViewBase):
 
         self.same_domain = data_dict["resource"].get("on_same_domain")
         if self.proxy_enabled and not self.same_domain:
-            data_dict["resource"]["original_url"] = data_dict["resource"].get(
-                "url"
-            )
-            data_dict["resource"]["url"] = proxy.get_proxified_resource_url(
-                data_dict
-            )
+            data_dict["resource"]["original_url"] = data_dict["resource"].get("url")
+            data_dict["resource"]["url"] = proxy.get_proxified_resource_url(data_dict)
 
     # ITemplateHelpers
 
@@ -299,12 +274,8 @@ class SHPView(GeoViewBase):
 
         self.same_domain = data_dict["resource"].get("on_same_domain")
         if self.proxy_enabled and not self.same_domain:
-            data_dict["resource"]["original_url"] = data_dict["resource"].get(
-                "url"
-            )
-            data_dict["resource"]["url"] = proxy.get_proxified_resource_url(
-                data_dict
-            )
+            data_dict["resource"]["original_url"] = data_dict["resource"].get("url")
+            data_dict["resource"]["url"] = proxy.get_proxified_resource_url(data_dict)
 
     # ITemplateHelpers
 

@@ -2,6 +2,7 @@
 Some very thin wrapper classes around those in OWSLib
 for convenience.
 """
+
 import six
 import logging
 
@@ -10,8 +11,10 @@ from owslib.fes import PropertyIsEqualTo, SortBy, SortProperty
 
 log = logging.getLogger(__name__)
 
+
 class CswError(Exception):
     pass
+
 
 class OwsService(object):
     def __init__(self, endpoint=None):
@@ -56,30 +59,36 @@ class OwsService(object):
         ows = self._ows(**kw)
         caps = self._xmd(ows)
         if not debug:
-            if "request" in caps: del caps["request"]
-            if "response" in caps: del caps["response"]
-        if "owscommon" in caps: del caps["owscommon"]
+            if "request" in caps:
+                del caps["request"]
+            if "response" in caps:
+                del caps["response"]
+        if "owscommon" in caps:
+            del caps["owscommon"]
         return caps
+
 
 class CswService(OwsService):
     """
     Perform various operations on a CSW service
     """
+
     from owslib.csw import CatalogueServiceWeb as _Implementation
 
     def __init__(self, endpoint=None):
         super(CswService, self).__init__(endpoint)
-        self.sortby = SortBy([SortProperty('dc:identifier')])
+        self.sortby = SortBy([SortProperty("dc:identifier")])
 
-    def getrecords(self, qtype=None, keywords=[],
-                   typenames="csw:Record", esn="brief",
-                   skip=0, count=10, outputschema="gmd", **kw):
+    def getrecords(
+        self, qtype=None, keywords=[], typenames="csw:Record", esn="brief", skip=0, count=10, outputschema="gmd", **kw
+    ):
         from owslib.csw import namespaces
+
         constraints = []
         csw = self._ows(**kw)
 
         if qtype is not None:
-           constraints.append(PropertyIsEqualTo("dc:type", qtype))
+            constraints.append(PropertyIsEqualTo("dc:type", qtype))
 
         kwa = {
             "constraints": constraints,
@@ -88,26 +97,36 @@ class CswService(OwsService):
             "startposition": skip,
             "maxrecords": count,
             "outputschema": namespaces[outputschema],
-            "sortby": self.sortby
-            }
-        log.info('Making CSW request: getrecords2 %r', kwa)
+            "sortby": self.sortby,
+        }
+        log.info("Making CSW request: getrecords2 %r", kwa)
         csw.getrecords2(**kwa)
         if csw.exceptionreport:
-            err = 'Error getting records: %r' % \
-                  csw.exceptionreport.exceptions
-            #log.error(err)
+            err = "Error getting records: %r" % csw.exceptionreport.exceptions
+            # log.error(err)
             raise CswError(err)
         return [self._xmd(r) for r in list(csw.records.values())]
 
-    def getidentifiers(self, qtype=None, typenames="csw:Record", esn="brief",
-                       keywords=[], limit=None, page=10, outputschema="gmd",
-                       startposition=0, cql=None, **kw):
+    def getidentifiers(
+        self,
+        qtype=None,
+        typenames="csw:Record",
+        esn="brief",
+        keywords=[],
+        limit=None,
+        page=10,
+        outputschema="gmd",
+        startposition=0,
+        cql=None,
+        **kw,
+    ):
         from owslib.csw import namespaces
+
         constraints = []
         csw = self._ows(**kw)
 
         if qtype is not None:
-           constraints.append(PropertyIsEqualTo("dc:type", qtype))
+            constraints.append(PropertyIsEqualTo("dc:type", qtype))
 
         kwa = {
             "constraints": constraints,
@@ -117,26 +136,25 @@ class CswService(OwsService):
             "maxrecords": page,
             "outputschema": namespaces[outputschema],
             "cql": cql,
-            "sortby": self.sortby
-            }
+            "sortby": self.sortby,
+        }
         i = 0
         matches = 0
         while True:
-            log.info('Making CSW request: getrecords2 %r', kwa)
+            log.info("Making CSW request: getrecords2 %r", kwa)
 
             csw.getrecords2(**kwa)
             if csw.exceptionreport:
-                err = 'Error getting identifiers: %r' % \
-                      csw.exceptionreport.exceptions
-                #log.error(err)
+                err = "Error getting identifiers: %r" % csw.exceptionreport.exceptions
+                # log.error(err)
                 raise CswError(err)
 
             if matches == 0:
-                matches = csw.results['matches']
+                matches = csw.results["matches"]
 
             identifiers = list(csw.records.keys())
             if limit is not None:
-                identifiers = identifiers[:(limit-startposition)]
+                identifiers = identifiers[: (limit - startposition)]
             for ident in identifiers:
                 yield ident
 
@@ -155,25 +173,25 @@ class CswService(OwsService):
 
     def getrecordbyid(self, ids=[], esn="full", outputschema="gmd", **kw):
         from owslib.csw import namespaces
+
         csw = self._ows(**kw)
         kwa = {
             "esn": esn,
             "outputschema": namespaces[outputschema],
-            }
+        }
         # Ordinary Python version's don't support the metadata argument
-        log.info('Making CSW request: getrecordbyid %r %r', ids, kwa)
+        log.info("Making CSW request: getrecordbyid %r %r", ids, kwa)
         csw.getrecordbyid(ids, **kwa)
         if csw.exceptionreport:
-            err = 'Error getting record by id: %r' % \
-                  csw.exceptionreport.exceptions
-            #log.error(err)
+            err = "Error getting record by id: %r" % csw.exceptionreport.exceptions
+            # log.error(err)
             raise CswError(err)
         if not csw.records:
             return
         record = self._xmd(list(csw.records.values())[0])
 
         ## strip off the enclosing results container, we only want the metadata
-        #md = csw._exml.find("/gmd:MD_Metadata")#, namespaces=namespaces)
+        # md = csw._exml.find("/gmd:MD_Metadata")#, namespaces=namespaces)
         # Ordinary Python version's don't support the metadata argument
         md = csw._exml.find("/{http://www.isotc211.org/2005/gmd}MD_Metadata")
         mdtree = etree.ElementTree(md)

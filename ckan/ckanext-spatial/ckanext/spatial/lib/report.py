@@ -1,7 +1,7 @@
-'''
+"""
 Library for creating reports that can be displayed easily in an HTML table
 and then saved as a CSV.
-'''
+"""
 
 from six import text_type, StringIO
 import datetime
@@ -15,7 +15,7 @@ class ReportTable(object):
         self.rows = []
 
     def add_row_dict(self, row_dict):
-        '''Adds a row to the report table'''
+        """Adds a row to the report table"""
         row = []
         for col_name in self.column_names:
             if col_name in row_dict:
@@ -24,11 +24,10 @@ class ReportTable(object):
                 value = None
             row.append(value)
         if row_dict:
-            raise Exception('Have left-over keys not under a column: %s' % row_dict)
+            raise Exception("Have left-over keys not under a column: %s" % row_dict)
         self.rows.append(row)
 
-    def get_rows_html_formatted(self, date_format='%d/%m/%y %H:%M',
-                                blank_cell_html=''):
+    def get_rows_html_formatted(self, date_format="%d/%m/%y %H:%M", blank_cell_html=""):
         for row in self.rows:
             row_formatted = row[:]
             for i, cell in enumerate(row):
@@ -40,29 +39,25 @@ class ReportTable(object):
 
     def get_csv(self):
         csvout = StringIO()
-        csvwriter = csv.writer(
-            csvout,
-            dialect='excel',
-            quoting=csv.QUOTE_NONNUMERIC
-        )
+        csvwriter = csv.writer(csvout, dialect="excel", quoting=csv.QUOTE_NONNUMERIC)
         csvwriter.writerow(self.column_names)
         for row in self.rows:
             row_formatted = []
             for cell in row:
                 if isinstance(cell, datetime.datetime):
-                    cell = cell.strftime('%Y-%m-%d %H:%M')
+                    cell = cell.strftime("%Y-%m-%d %H:%M")
                 elif isinstance(cell, int):
                     cell = text_type(cell)
                 elif isinstance(cell, (list, tuple)):
                     cell = text_type(cell)
                 elif cell is None:
-                    cell = ''
+                    cell = ""
                 else:
-                    cell = cell.encode('utf8')
+                    cell = cell.encode("utf8")
                 row_formatted.append(cell)
             try:
                 csvwriter.writerow(row_formatted)
             except Exception as e:
-                raise Exception("%s: %s, %s"%(e, row, row_formatted))
+                raise Exception("%s: %s, %s" % (e, row, row_formatted))
         csvout.seek(0)
         return csvout.read()

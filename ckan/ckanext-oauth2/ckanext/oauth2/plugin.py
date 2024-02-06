@@ -35,31 +35,31 @@ log = logging.getLogger(__name__)
 
 
 def _no_permissions(context, msg):
-    user = context['user']
-    return {'success': False, 'msg': msg.format(user=user)}
+    user = context["user"]
+    return {"success": False, "msg": msg.format(user=user)}
 
 
 @toolkit.auth_sysadmins_check
 def user_create(context, data_dict):
-    msg = toolkit._('Users cannot be created.')
+    msg = toolkit._("Users cannot be created.")
     return _no_permissions(context, msg)
 
 
 @toolkit.auth_sysadmins_check
 def user_update(context, data_dict):
-    msg = toolkit._('Users cannot be edited.')
+    msg = toolkit._("Users cannot be edited.")
     return _no_permissions(context, msg)
 
 
 @toolkit.auth_sysadmins_check
 def user_reset(context, data_dict):
-    msg = toolkit._('Users cannot reset passwords.')
+    msg = toolkit._("Users cannot reset passwords.")
     return _no_permissions(context, msg)
 
 
 @toolkit.auth_sysadmins_check
 def request_reset(context, data_dict):
-    msg = toolkit._('Users cannot reset passwords.')
+    msg = toolkit._("Users cannot reset passwords.")
     return _no_permissions(context, msg)
 
 
@@ -80,18 +80,16 @@ class OAuth2Plugin(plugins.SingletonPlugin):
     def get_commands(self):
         return get_commands()
 
-
     def __init__(self, name=None):
-        '''Store the OAuth 2 client configuration'''
-        log.debug('Init OAuth2 extension')
+        """Store the OAuth 2 client configuration"""
+        log.debug("Init OAuth2 extension")
 
         db.init_db(model)
-        log.debug(f'Creating UserToken...')
+        log.debug(f"Creating UserToken...")
         self.oauth2helper = OAuth2Helper()
 
-
     def identify(self):
-        log.debug('identify')
+        log.debug("identify")
 
         def _refresh_and_save_token(user_name):
             new_token = self.oauth2helper.refresh_token(user_name)
@@ -99,31 +97,30 @@ class OAuth2Plugin(plugins.SingletonPlugin):
                 toolkit.g.usertoken = new_token
 
         environ = toolkit.request.environ
-        apikey = toolkit.request.headers.get(self.authorization_header, '')
+        apikey = toolkit.request.headers.get(self.authorization_header, "")
         user_name = None
 
-
         if self.authorization_header == "authorization":
-            if apikey.startswith('Bearer '):
+            if apikey.startswith("Bearer "):
                 apikey = apikey[7:].strip()
             else:
-                apikey = ''
+                apikey = ""
 
         # This API Key is not the one of CKAN, it's the one provided by the OAuth2 Service
         if apikey:
             try:
-                token = {'access_token': apikey}
+                token = {"access_token": apikey}
                 user_name = self.oauth2helper.identify(token)
-                log.debug(f'user_name1: {user_name}')
+                log.debug(f"user_name1: {user_name}")
             except Exception as e:
-                log.debug(f'Auth error:')
+                log.debug(f"Auth error:")
                 log.debug(e)
                 pass
 
         # If the authentication via API fails, we can still log in the user using session.
-        if user_name is None and 'repoze.who.identity' in environ:
-            user_name = environ['repoze.who.identity']['repoze.who.userid']
-            log.info('User %s logged using session' % user_name)
+        if user_name is None and "repoze.who.identity" in environ:
+            user_name = environ["repoze.who.identity"]["repoze.who.userid"]
+            log.info("User %s logged using session" % user_name)
 
         # If we have been able to log in the user (via API or Session)
         if user_name:
@@ -134,53 +131,50 @@ class OAuth2Plugin(plugins.SingletonPlugin):
         else:
             g.user = None
             toolkit.g.user = None
-            log.warn('The user is not currently logged...')
+            log.warn("The user is not currently logged...")
 
     def get_auth_functions(self):
         # we need to prevent some actions being authorized.
         return {
-            'user_create': user_create,
-            'user_update': user_update,
-            'user_reset': user_reset,
-            'request_reset': request_reset
+            "user_create": user_create,
+            "user_update": user_update,
+            "user_reset": user_reset,
+            "request_reset": request_reset,
         }
 
     def update_config(self, config):
         # Update our configuration
-        log.debug('update config...')
-        self.register_url = os.environ.get("CKAN_OAUTH2_REGISTER_URL", config.get('ckan.oauth2.register_url', None))
-        self.reset_url = os.environ.get("CKAN_OAUTH2_RESET_URL", config.get('ckan.oauth2.reset_url', None))
-        self.edit_url = os.environ.get("CKAN_OAUTH2_EDIT_URL", config.get('ckan.oauth2.edit_url', None))
-        self.authorization_header = os.environ.get("CKAN_OAUTH2_AUTHORIZATION_HEADER", config.get('ckan.oauth2.authorization_header', 'Authorization')).lower()
+        log.debug("update config...")
+        self.register_url = os.environ.get("CKAN_OAUTH2_REGISTER_URL", config.get("ckan.oauth2.register_url", None))
+        self.reset_url = os.environ.get("CKAN_OAUTH2_RESET_URL", config.get("ckan.oauth2.reset_url", None))
+        self.edit_url = os.environ.get("CKAN_OAUTH2_EDIT_URL", config.get("ckan.oauth2.edit_url", None))
+        self.authorization_header = os.environ.get(
+            "CKAN_OAUTH2_AUTHORIZATION_HEADER", config.get("ckan.oauth2.authorization_header", "Authorization")
+        ).lower()
 
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
         # that CKAN will use this plugin's custom templates.
-        plugins.toolkit.add_template_directory(config, 'templates')
-
+        plugins.toolkit.add_template_directory(config, "templates")
 
     def before_map(self, m):
-        log.debug('Setting up the redirections to the OAuth2 service')
+        log.debug("Setting up the redirections to the OAuth2 service")
 
-        m.connect('/user/login',
-                  controller='ckanext.oauth2.controller:OAuth2Controller',
-                  action='login')
+        m.connect("/user/login", controller="ckanext.oauth2.controller:OAuth2Controller", action="login")
 
         # We need to handle petitions received to the Callback URL
         # since some error can arise and we need to process them
-        m.connect('/oauth2/callback',
-                  controller='ckanext.oauth2.controller:OAuth2Controller',
-                  action='callback')
+        m.connect("/oauth2/callback", controller="ckanext.oauth2.controller:OAuth2Controller", action="callback")
 
         # Redirect the user to the OAuth service register page
         if self.register_url:
-            m.redirect('/user/register', self.register_url)
+            m.redirect("/user/register", self.register_url)
 
         # Redirect the user to the OAuth service reset page
         if self.reset_url:
-            m.redirect('/user/reset', self.reset_url)
+            m.redirect("/user/reset", self.reset_url)
 
         # Redirect the user to the OAuth service reset page
         if self.edit_url:
-            m.redirect('/user/edit/{user}', self.edit_url)
+            m.redirect("/user/edit/{user}", self.edit_url)
 
         return m

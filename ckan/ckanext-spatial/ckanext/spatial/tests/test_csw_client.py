@@ -51,9 +51,7 @@ class CkanServerCase(object):
         pid = process.pid
         pid = int(pid)
         if os.system("kill -9 %d" % pid):
-            raise Exception(
-                "Can't kill foreign CKAN instance (pid: %d)." % pid
-            )
+            raise Exception("Can't kill foreign CKAN instance (pid: %d)." % pid)
 
 
 class CkanProcess(CkanServerCase):

@@ -27,6 +27,7 @@ def clean_postgis():
     Session.execute("DROP EXTENSION IF EXISTS postgis CASCADE")
     Session.commit()
 
+
 @pytest.fixture
 def harvest_setup():
     harvest_model.setup()

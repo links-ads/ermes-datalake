@@ -31,7 +31,7 @@ ckan config-tool ${config} -s "app:main" \
         "solr_url=${CKAN_SOLR_URL}" \
         "ckan.redis.url = ${CKAN_REDIS_URL}" \
         "ckan.cors.origin_allow_all = true" \
-        "ckan.plugins = notify theme datesearch datatype authcheck stats text_view image_view recline_view spatial_metadata spatial_query resource_proxy geo_view geojson_view shp_view scheming_datasets cloudstorage"  \
+        "ckan.plugins = oauth2 notify theme datesearch datatype authcheck stats text_view image_view recline_view spatial_metadata spatial_query resource_proxy geo_view geojson_view shp_view scheming_datasets cloudstorage"  \
         "scheming.presets = ckanext.scheming:presets.json" \
         "scheming.ontology_schema = ckanext.scheming:${SCHEMING_ONTOLOGY_FILE}" \
         "scheming.dataset_schemas = ckanext.scheming:ckan_dataset_INSPIRE.json" \

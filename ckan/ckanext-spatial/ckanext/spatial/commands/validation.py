@@ -9,8 +9,9 @@ import ckanext.spatial.util as util
 
 log = logging.getLogger(__name__)
 
+
 class Validation(CkanCommand):
-    '''Validation commands
+    """Validation commands
 
     Usage:
         validation report [package-name]
@@ -23,28 +24,29 @@ class Validation(CkanCommand):
 
         validation file <filename>.xml
             Performs validation on the given metadata file.
-    '''
-    summary = __doc__.split('\n')[0]
+    """
+
+    summary = __doc__.split("\n")[0]
     usage = __doc__
     max_args = 3
     min_args = 0
 
     def command(self):
-        if not self.args or self.args[0] in ['--help', '-h', 'help']:
+        if not self.args or self.args[0] in ["--help", "-h", "help"]:
             print(self.usage)
             sys.exit(1)
 
         self._load_config()
 
         cmd = self.args[0]
-        if cmd == 'report':
+        if cmd == "report":
             self.report()
-        elif cmd == 'report-csv':
+        elif cmd == "report-csv":
             self.report_csv()
-        elif cmd == 'file':
+        elif cmd == "file":
             self.validate_file()
         else:
-            print('Command %s not recognized' % cmd)
+            print("Command %s not recognized" % cmd)
 
     def report(self):
 
@@ -56,16 +58,16 @@ class Validation(CkanCommand):
 
     def validate_file(self):
         if len(self.args) > 2:
-            print('Too many parameters %i' % len(self.args))
+            print("Too many parameters %i" % len(self.args))
             sys.exit(1)
         if len(self.args) < 2:
-            print('Not enough parameters %i' % len(self.args))
+            print("Not enough parameters %i" % len(self.args))
             sys.exit(1)
 
         return util.validate_file(self.args[1])
 
     def report_csv(self):
         if len(self.args) != 2:
-            print('Wrong number of arguments')
+            print("Wrong number of arguments")
             sys.exit(1)
         return util.report_csv(self.args[1])

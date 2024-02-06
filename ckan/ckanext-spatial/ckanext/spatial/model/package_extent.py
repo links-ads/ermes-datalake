@@ -14,21 +14,25 @@ log = getLogger(__name__)
 
 package_extent_table = None
 
-DEFAULT_SRID = 4326 #(WGS 84)
+DEFAULT_SRID = 4326  # (WGS 84)
+
 
 def setup(srid=None):
 
     if package_extent_table is None:
         define_spatial_tables(srid)
-        log.debug('Spatial tables defined in memory')
+        log.debug("Spatial tables defined in memory")
 
     if model.package_table.exists():
-        if not Table('geometry_columns',meta.metadata).exists() or \
-            not Table('spatial_ref_sys',meta.metadata).exists():
-            raise Exception('The spatial extension is enabled, but PostGIS ' + \
-                    'has not been set up in the database. ' + \
-                    'Please refer to the "Setting up PostGIS" section in the README.')
-
+        if (
+            not Table("geometry_columns", meta.metadata).exists()
+            or not Table("spatial_ref_sys", meta.metadata).exists()
+        ):
+            raise Exception(
+                "The spatial extension is enabled, but PostGIS "
+                + "has not been set up in the database. "
+                + 'Please refer to the "Setting up PostGIS" section in the README.'
+            )
 
         if not package_extent_table.exists():
             try:
@@ -37,18 +41,18 @@ def setup(srid=None):
                 # Make sure the table does not remain incorrectly created
                 # (eg without geom column or constraints)
                 if package_extent_table.exists():
-                    Session.execute('DROP TABLE package_extent')
+                    Session.execute("DROP TABLE package_extent")
                     Session.commit()
 
                 raise e
 
-            log.debug('Spatial tables created')
+            log.debug("Spatial tables created")
         else:
-            log.debug('Spatial tables already exist')
+            log.debug("Spatial tables already exist")
             # Future migrations go here
 
     else:
-        log.debug('Spatial tables creation deferred')
+        log.debug("Spatial tables creation deferred")
 
 
 class PackageExtent(DomainObject):
@@ -62,7 +66,7 @@ def define_spatial_tables(db_srid=None):
     global package_extent_table
 
     if not db_srid:
-        db_srid = int(config.get('ckan.spatial.srid', DEFAULT_SRID))
+        db_srid = int(config.get("ckan.spatial.srid", DEFAULT_SRID))
     else:
         db_srid = int(db_srid)
 

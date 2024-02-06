@@ -23,9 +23,7 @@ from ckanext.spatial.tests.base import SpatialTestBase
 
 
 def create_package(**package_dict):
-    user = plugins.toolkit.get_action("get_site_user")(
-        {"model": model, "ignore_auth": True}, {}
-    )
+    user = plugins.toolkit.get_action("get_site_user")({"model": model, "ignore_auth": True}, {})
     context = {
         "model": model,
         "session": model.Session,
@@ -38,15 +36,13 @@ def create_package(**package_dict):
     return context.get("id")
 
 
-@pytest.mark.usefixtures('with_plugins',  'clean_postgis', 'clean_db', 'clean_index', 'harvest_setup', 'spatial_setup')
+@pytest.mark.usefixtures("with_plugins", "clean_postgis", "clean_db", "clean_index", "harvest_setup", "spatial_setup")
 class TestCompareGeometries(SpatialTestBase):
     def _get_extent_object(self, geometry):
         if isinstance(geometry, six.string_types):
             geometry = json.loads(geometry)
         shape = shape(geometry)
-        return PackageExtent(
-            package_id="xxx", the_geom=WKTElement(shape.wkt, 4326)
-        )
+        return PackageExtent(package_id="xxx", the_geom=WKTElement(shape.wkt, 4326))
 
     def test_same_points(self):
 
@@ -68,27 +64,26 @@ class TestValidateBbox(object):
 
     def test_string(self):
         res = validate_bbox("-4.96,55.70,-3.78,56.43")
-        assert(res == self.bbox_dict)
+        assert res == self.bbox_dict
 
     def test_list(self):
         res = validate_bbox([-4.96, 55.70, -3.78, 56.43])
-        assert(res == self.bbox_dict)
+        assert res == self.bbox_dict
 
     def test_bad(self):
         res = validate_bbox([-4.96, 55.70, -3.78])
-        assert(res is None)
+        assert res is None
 
     def test_bad_2(self):
         res = validate_bbox("random")
-        assert(res is None)
+        assert res is None
 
 
 def bbox_2_geojson(bbox_dict):
     return (
         '{"type":"Polygon","coordinates":[[[%(minx)s, %(miny)s],'
-        '[%(minx)s, %(maxy)s], [%(maxx)s, %(maxy)s], '
-        '[%(maxx)s, %(miny)s], [%(minx)s, %(miny)s]]]}'
-        % bbox_dict
+        "[%(minx)s, %(maxy)s], [%(maxx)s, %(maxy)s], "
+        "[%(maxx)s, %(miny)s], [%(minx)s, %(miny)s]]]}" % bbox_dict
     )
 
 
@@ -118,7 +113,7 @@ class SpatialQueryTestBase(SpatialTestBase):
         }
 
 
-@pytest.mark.usefixtures('with_plugins',  'clean_postgis', 'clean_db', 'clean_index', 'harvest_setup', 'spatial_setup')
+@pytest.mark.usefixtures("with_plugins", "clean_postgis", "clean_db", "clean_index", "harvest_setup", "spatial_setup")
 class TestBboxQuery(SpatialQueryTestBase):
     # x values for the fixtures
     fixtures_x = [(0, 1), (0, 3), (0, 4), (4, 5), (6, 7)]
@@ -128,10 +123,10 @@ class TestBboxQuery(SpatialQueryTestBase):
         bbox_dict = self.x_values_to_bbox((2, 5))
         package_ids = [res.package_id for res in bbox_query(bbox_dict)]
         package_titles = [model.Package.get(id_).title for id_ in package_ids]
-        assert(set(package_titles) == {"(0, 3)", "(0, 4)", "(4, 5)"})
+        assert set(package_titles) == {"(0, 3)", "(0, 4)", "(4, 5)"}
 
 
-@pytest.mark.usefixtures('with_plugins',  'clean_postgis', 'clean_db', 'clean_index', 'harvest_setup', 'spatial_setup')
+@pytest.mark.usefixtures("with_plugins", "clean_postgis", "clean_db", "clean_index", "harvest_setup", "spatial_setup")
 class TestBboxQueryOrdered(SpatialQueryTestBase):
     # x values for the fixtures
     fixtures_x = [(0, 9), (1, 8), (2, 7), (3, 6), (4, 5), (8, 9)]
@@ -143,22 +138,15 @@ class TestBboxQueryOrdered(SpatialQueryTestBase):
         package_ids = [res.package_id for res in q]
         package_titles = [model.Package.get(id_).title for id_ in package_ids]
         # check the right items are returned
-        assert(
-            set(package_titles) ==
-            set(("(0, 9)", "(1, 8)", "(2, 7)", "(3, 6)", "(4, 5)"))
-        )
+        assert set(package_titles) == set(("(0, 9)", "(1, 8)", "(2, 7)", "(3, 6)", "(4, 5)"))
         # check the order is good
-        assert(
-            package_titles == ["(2, 7)", "(1, 8)", "(3, 6)", "(0, 9)", "(4, 5)"]
-        )
+        assert package_titles == ["(2, 7)", "(1, 8)", "(3, 6)", "(0, 9)", "(4, 5)"]
 
 
-@pytest.mark.usefixtures('with_plugins',  'clean_postgis', 'clean_db', 'clean_index', 'harvest_setup', 'spatial_setup')
+@pytest.mark.usefixtures("with_plugins", "clean_postgis", "clean_db", "clean_index", "harvest_setup", "spatial_setup")
 class TestBboxQueryPerformance(SpatialQueryTestBase):
     # x values for the fixtures
-    fixtures_x = [
-        (random.uniform(0, 3), random.uniform(3, 9)) for x in range(10)
-    ]  # increase the number to 1000 say
+    fixtures_x = [(random.uniform(0, 3), random.uniform(3, 9)) for x in range(10)]  # increase the number to 1000 say
 
     def test_query(self):
         bbox_dict = self.x_values_to_bbox((2, 7))

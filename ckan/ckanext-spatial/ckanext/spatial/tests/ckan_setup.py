@@ -13,19 +13,18 @@ except ImportError:
     from pylons.i18n.translation import _get_translator
 
     def pytest_addoption(parser):
-        """Allow using custom config file during tests.
-        """
-        parser.addoption(u"--ckan-ini", action=u"store")
+        """Allow using custom config file during tests."""
+        parser.addoption("--ckan-ini", action="store")
 
     def pytest_sessionstart(session):
-        """Initialize CKAN environment.
-        """
+        """Initialize CKAN environment."""
         global pylonsapp
         path = os.getcwd()
         sys.path.insert(0, path)
         pkg_resources.working_set.add_entry(path)
         pylonsapp = loadapp(
-            "config:" + session.config.option.ckan_ini, relative_to=path,
+            "config:" + session.config.option.ckan_ini,
+            relative_to=path,
         )
 
         # Initialize a translator for tests that utilize i18n

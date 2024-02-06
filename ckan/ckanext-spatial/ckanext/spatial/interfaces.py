@@ -4,7 +4,7 @@ from ckan.plugins.interfaces import Interface
 class ISpatialHarvester(Interface):
 
     def get_package_dict(self, context, data_dict):
-        '''
+        """
         Allows to modify the dataset dict that will be created or updated
 
         This is the dict that the harvesters will pass to the `package_create`
@@ -44,11 +44,11 @@ class ISpatialHarvester(Interface):
         :returns: A dataset dict ready to be used by ``package_create`` or
                   ``package_update``
         :rtype: dict
-        '''
-        return data_dict['package_dict']
+        """
+        return data_dict["package_dict"]
 
     def get_validators(self):
-        '''
+        """
         Allows to register custom Validators that can be applied to harvested
         metadata documents.
 
@@ -58,11 +58,11 @@ class ISpatialHarvester(Interface):
 
         :returns: A list of Validator classes
         :rtype: list
-        '''
+        """
         return []
 
     def transform_to_iso(self, original_document, original_format, harvest_object):
-        '''
+        """
         Transforms an XML document to ISO 19139
 
         This method will be only called from the import stage if the
@@ -86,6 +86,5 @@ class ISpatialHarvester(Interface):
             successful
         :rtype: string
 
-        '''
+        """
         return None
-
