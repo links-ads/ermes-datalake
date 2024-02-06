@@ -13,18 +13,14 @@ class TestValidation(object):
         return os.path.join(os.path.dirname(__file__), "xml", file_name)
 
     def get_validation_errors(self, validator, validation_test_filename):
-        validation_test_filepath = self._get_file_path(
-            validation_test_filename
-        )
+        validation_test_filepath = self._get_file_path(validation_test_filename)
         xml = etree.parse(validation_test_filepath)
         is_valid, errors = validator.is_valid(xml)
 
         return ";".join([e[0] for e in errors])
 
     def test_iso19139_failure(self):
-        errors = self.get_validation_errors(
-            validation.ISO19139Schema, "iso19139/dataset-invalid.xml"
-        )
+        errors = self.get_validation_errors(validation.ISO19139Schema, "iso19139/dataset-invalid.xml")
 
         assert len(errors) > 0
         assert_in("Dataset schema (gmx.xsd)", errors)
@@ -34,9 +30,7 @@ class TestValidation(object):
         )
 
     def test_iso19139_pass(self):
-        errors = self.get_validation_errors(
-            validation.ISO19139Schema, "iso19139/dataset.xml"
-        )
+        errors = self.get_validation_errors(validation.ISO19139Schema, "iso19139/dataset.xml")
         assert_equal(errors, "")
 
     # Gemini2.1 tests are basically the same as those in test_harvest.py but
@@ -75,23 +69,15 @@ class TestValidation(object):
         assert_in("Descriptive keywords are mandatory", errors)
 
     def assert_passes_all_gemini2_1_validation(self, xml_filepath):
-        errs = self.get_validation_errors(
-            validation.ISO19139EdenSchema, xml_filepath
-        )
+        errs = self.get_validation_errors(validation.ISO19139EdenSchema, xml_filepath)
         assert not errs, "ISO19139EdenSchema: " + errs
-        errs = self.get_validation_errors(
-            validation.ConstraintsSchematron14, xml_filepath
-        )
+        errs = self.get_validation_errors(validation.ConstraintsSchematron14, xml_filepath)
         assert not errs, "ConstraintsSchematron14: " + errs
-        errs = self.get_validation_errors(
-            validation.Gemini2Schematron, xml_filepath
-        )
+        errs = self.get_validation_errors(validation.Gemini2Schematron, xml_filepath)
         assert not errs, "Gemini2Schematron: " + errs
 
     def test_04_dataset_valid(self):
-        self.assert_passes_all_gemini2_1_validation(
-            "gemini2.1/validation/04_Dataset_Valid.xml"
-        )
+        self.assert_passes_all_gemini2_1_validation("gemini2.1/validation/04_Dataset_Valid.xml")
 
     def test_05_series_fail_iso19139_schema(self):
         errors = self.get_validation_errors(
@@ -125,9 +111,7 @@ class TestValidation(object):
         assert_in("Descriptive keywords are mandatory", errors)
 
     def test_08_series_valid(self):
-        self.assert_passes_all_gemini2_1_validation(
-            "gemini2.1/validation/08_Series_Valid.xml"
-        )
+        self.assert_passes_all_gemini2_1_validation("gemini2.1/validation/08_Series_Valid.xml")
 
     def test_09_service_fail_iso19139_schema(self):
         errors = self.get_validation_errors(
@@ -164,9 +148,7 @@ class TestValidation(object):
         )
 
     def test_12_service_valid(self):
-        self.assert_passes_all_gemini2_1_validation(
-            "gemini2.1/validation/12_Service_Valid.xml"
-        )
+        self.assert_passes_all_gemini2_1_validation("gemini2.1/validation/12_Service_Valid.xml")
 
     def test_13_dataset_fail_iso19139_schema_2(self):
         # This test Dataset has srv tags and only Service metadata should.
@@ -193,9 +175,7 @@ class TestValidation(object):
 """
         failure_xml = etree.fromstring(validation_error_xml)
         fail_element = failure_xml.getchildren()[0]
-        details = validation.SchematronValidator.extract_error_details(
-            fail_element
-        )
+        details = validation.SchematronValidator.extract_error_details(fail_element)
         if isinstance(details, tuple):
             details = details[1]
         assert_in("srv:serviceType/*[1] = 'discovery'", details)
@@ -205,9 +185,7 @@ class TestValidation(object):
     def test_error_line_numbers(self):
         file_path = self._get_file_path("iso19139/dataset-invalid.xml")
         xml = etree.parse(file_path)
-        is_valid, profile, errors = validation.Validators(
-            profiles=["iso19139"]
-        ).is_valid(xml)
+        is_valid, profile, errors = validation.Validators(profiles=["iso19139"]).is_valid(xml)
         assert not is_valid
         assert len(errors) == 2
 

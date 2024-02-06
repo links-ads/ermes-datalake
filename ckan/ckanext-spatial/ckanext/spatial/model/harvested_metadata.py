@@ -2,6 +2,7 @@ from lxml import etree
 import six
 
 import logging
+
 log = logging.getLogger(__name__)
 
 
@@ -11,13 +12,13 @@ class MappedXmlObject(object):
 
 class MappedXmlDocument(MappedXmlObject):
     def __init__(self, xml_str=None, xml_tree=None):
-        assert (xml_str or xml_tree is not None), 'Must provide some XML in one format or another'
+        assert xml_str or xml_tree is not None, "Must provide some XML in one format or another"
         self.xml_str = xml_str
         self.xml_tree = xml_tree
 
     def read_values(self):
-        '''For all of the elements listed, finds the values of them in the
-        XML and returns them.'''
+        """For all of the elements listed, finds the values of them in the
+        XML and returns them."""
         values = {}
         tree = self.get_xml_tree()
         for element in self.elements:
@@ -26,9 +27,9 @@ class MappedXmlDocument(MappedXmlObject):
         return values
 
     def read_value(self, name):
-        '''For the given element name, find the value in the XML and return
+        """For the given element name, find the value in the XML and return
         it.
-        '''
+        """
         tree = self.get_xml_tree()
         for element in self.elements:
             if element.name == name:
@@ -102,7 +103,7 @@ class MappedXmlElement(MappedXmlObject):
         return etree.tostring(element, pretty_print=False)
 
     def fix_multiplicity(self, values):
-        '''
+        """
         When a field contains multiple values, yet the spec says
         it should contain only one, then return just the first value,
         rather than a list.
@@ -110,17 +111,17 @@ class MappedXmlElement(MappedXmlObject):
         In the ISO19115 specification, multiplicity relates to:
         * 'Association Cardinality'
         * 'Obligation/Condition' & 'Maximum Occurence'
-        '''
+        """
         if self.multiplicity == "0":
             # 0 = None
             if values:
-                log.warn("Values found for element '%s' when multiplicity should be 0: %s",  self.name, values)
+                log.warn("Values found for element '%s' when multiplicity should be 0: %s", self.name, values)
             return ""
         elif self.multiplicity == "1":
             # 1 = Mandatory, maximum 1 = Exactly one
             if not values:
                 log.warn("Value not found for element '%s'" % self.name)
-                return ''
+                return ""
             return values[0]
         elif self.multiplicity == "*":
             # * = 0..* = zero or more
@@ -135,25 +136,24 @@ class MappedXmlElement(MappedXmlObject):
             # 1..* = one or more
             return values
         else:
-            log.warning('Multiplicity not specified for element: %s',
-                        self.name)
+            log.warning("Multiplicity not specified for element: %s", self.name)
             return values
 
 
 class ISOElement(MappedXmlElement):
 
     namespaces = {
-       "gts": "http://www.isotc211.org/2005/gts",
-       "gml": "http://www.opengis.net/gml",
-       "gml32": "http://www.opengis.net/gml/3.2",
-       "gmx": "http://www.isotc211.org/2005/gmx",
-       "gsr": "http://www.isotc211.org/2005/gsr",
-       "gss": "http://www.isotc211.org/2005/gss",
-       "gco": "http://www.isotc211.org/2005/gco",
-       "gmd": "http://www.isotc211.org/2005/gmd",
-       "srv": "http://www.isotc211.org/2005/srv",
-       "xlink": "http://www.w3.org/1999/xlink",
-       "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+        "gts": "http://www.isotc211.org/2005/gts",
+        "gml": "http://www.opengis.net/gml",
+        "gml32": "http://www.opengis.net/gml/3.2",
+        "gmx": "http://www.isotc211.org/2005/gmx",
+        "gsr": "http://www.isotc211.org/2005/gsr",
+        "gss": "http://www.isotc211.org/2005/gss",
+        "gco": "http://www.isotc211.org/2005/gco",
+        "gmd": "http://www.isotc211.org/2005/gmd",
+        "srv": "http://www.isotc211.org/2005/srv",
+        "xlink": "http://www.w3.org/1999/xlink",
+        "xsi": "http://www.w3.org/2001/XMLSchema-instance",
     }
 
 
@@ -196,7 +196,7 @@ class ISOResourceLocator(ISOElement):
             ],
             multiplicity="0..1",
         ),
-        ]
+    ]
 
 
 class ISOResponsibleParty(ISOElement):
@@ -229,7 +229,7 @@ class ISOResponsibleParty(ISOElement):
                 "gmd:contactInfo/gmd:CI_Contact",
             ],
             multiplicity="0..1",
-            elements = [
+            elements=[
                 ISOElement(
                     name="email",
                     search_paths=[
@@ -244,8 +244,7 @@ class ISOResponsibleParty(ISOElement):
                     ],
                     multiplicity="0..1",
                 ),
-
-            ]
+            ],
         ),
         ISOElement(
             name="role",
@@ -298,6 +297,7 @@ class ISOReferenceDate(ISOElement):
         ),
     ]
 
+
 class ISOCoupledResources(ISOElement):
 
     elements = [
@@ -322,7 +322,6 @@ class ISOCoupledResources(ISOElement):
             ],
             multiplicity="*",
         ),
-
     ]
 
 
@@ -358,6 +357,7 @@ class ISOBoundingBox(ISOElement):
             multiplicity="1",
         ),
     ]
+
 
 class ISOBrowseGraphic(ISOElement):
 
@@ -406,7 +406,7 @@ class ISOKeyword(ISOElement):
         ),
         # If Thesaurus information is needed at some point, this is the
         # place to add it
-   ]
+    ]
 
 
 class ISOUsage(ISOElement):
@@ -426,8 +426,7 @@ class ISOUsage(ISOElement):
             ],
             multiplicity="0..1",
         ),
-
-   ]
+    ]
 
 
 class ISOAggregationInfo(ISOElement):
@@ -463,7 +462,7 @@ class ISOAggregationInfo(ISOElement):
             ],
             multiplicity="0..1",
         ),
-   ]
+    ]
 
 
 class ISODocument(MappedXmlDocument):
@@ -565,7 +564,6 @@ class ISODocument(MappedXmlDocument):
                 "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:citation/gmd:CI_Citation/gmd:presentationForm/gmd:CI_PresentationFormCode/@codeListValue",
                 "gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:presentationForm/gmd:CI_PresentationFormCode/text()",
                 "gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:citation/gmd:CI_Citation/gmd:presentationForm/gmd:CI_PresentationFormCode/@codeListValue",
-
             ],
             multiplicity="*",
         ),
@@ -628,7 +626,7 @@ class ISODocument(MappedXmlDocument):
                 "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords",
                 "gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords",
             ],
-            multiplicity="*"
+            multiplicity="*",
         ),
         ISOElement(
             name="keyword-inspire-theme",
@@ -652,7 +650,7 @@ class ISODocument(MappedXmlDocument):
                 "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:resourceSpecificUsage/gmd:MD_Usage",
                 "gmd:identificationInfo/srv:SV_ServiceIdentification/gmd:resourceSpecificUsage/gmd:MD_Usage",
             ],
-            multiplicity="*"
+            multiplicity="*",
         ),
         ISOElement(
             name="limitations-on-public-access",
@@ -672,7 +670,6 @@ class ISODocument(MappedXmlDocument):
             ],
             multiplicity="*",
         ),
-
         ISOElement(
             name="use-constraints",
             search_paths=[
@@ -687,7 +684,7 @@ class ISODocument(MappedXmlDocument):
                 "gmd:identificationInfo/gmd:MD_DataIdentification/gmd:aggregationInfo/gmd:MD_AggregateInformation",
                 "gmd:identificationInfo/gmd:SV_ServiceIdentification/gmd:aggregationInfo/gmd:MD_AggregateInformation",
             ],
-            multiplicity="*"
+            multiplicity="*",
         ),
         ISOElement(
             name="spatial-data-service-type",
@@ -740,8 +737,7 @@ class ISODocument(MappedXmlDocument):
         ),
         ISOElement(
             name="extent-controlled",
-            search_paths=[
-            ],
+            search_paths=[],
             multiplicity="*",
         ),
         ISOElement(
@@ -820,7 +816,7 @@ class ISODocument(MappedXmlDocument):
             name="resource-locator",
             search_paths=[
                 "gmd:distributionInfo/gmd:MD_Distribution/gmd:transferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource",
-                "gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorTransferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource"
+                "gmd:distributionInfo/gmd:MD_Distribution/gmd:distributor/gmd:MD_Distributor/gmd:distributorTransferOptions/gmd:MD_DigitalTransferOptions/gmd:onLine/gmd:CI_OnlineResource",
             ],
             multiplicity="*",
         ),
@@ -867,7 +863,6 @@ class ISODocument(MappedXmlDocument):
             ],
             multiplicity="*",
         ),
-
     ]
 
     def infer_values(self, values):
@@ -884,82 +879,84 @@ class ISODocument(MappedXmlDocument):
         return values
 
     def infer_date_released(self, values):
-        value = ''
-        for date in values['dataset-reference-date']:
-            if date['type'] == 'publication':
-                value = date['value']
+        value = ""
+        for date in values["dataset-reference-date"]:
+            if date["type"] == "publication":
+                value = date["value"]
                 break
-        values['date-released'] = value
+        values["date-released"] = value
 
     def infer_date_updated(self, values):
-        value = ''
+        value = ""
         dates = []
         # Use last of several multiple revision dates.
-        for date in values['dataset-reference-date']:
-            if date['type'] == 'revision':
-                dates.append(date['value'])
+        for date in values["dataset-reference-date"]:
+            if date["type"] == "revision":
+                dates.append(date["value"])
 
         if len(dates):
             if len(dates) > 1:
                 dates.sort(reverse=True)
             value = dates[0]
 
-        values['date-updated'] = value
+        values["date-updated"] = value
 
     def infer_date_created(self, values):
-        value = ''
-        for date in values['dataset-reference-date']:
-            if date['type'] == 'creation':
-                value = date['value']
+        value = ""
+        for date in values["dataset-reference-date"]:
+            if date["type"] == "creation":
+                value = date["value"]
                 break
-        values['date-created'] = value
+        values["date-created"] = value
 
     def infer_url(self, values):
-        value = ''
-        for locator in values['resource-locator']:
-            if locator['function'] == 'information':
-                value = locator['url']
+        value = ""
+        for locator in values["resource-locator"]:
+            if locator["function"] == "information":
+                value = locator["url"]
                 break
-        values['url'] = value
+        values["url"] = value
 
     def infer_tags(self, values):
         tags = []
-        for key in ['keyword-inspire-theme', 'keyword-controlled-other']:
+        for key in ["keyword-inspire-theme", "keyword-controlled-other"]:
             for item in values[key]:
                 if item not in tags:
                     tags.append(item)
-        values['tags'] = tags
+        values["tags"] = tags
 
     def infer_publisher(self, values):
-        value = ''
-        for responsible_party in values['responsible-organisation']:
-            if responsible_party['role'] == 'publisher':
-                value = responsible_party['organisation-name']
+        value = ""
+        for responsible_party in values["responsible-organisation"]:
+            if responsible_party["role"] == "publisher":
+                value = responsible_party["organisation-name"]
             if value:
                 break
-        values['publisher'] = value
+        values["publisher"] = value
 
     def infer_contact(self, values):
-        value = ''
-        for responsible_party in values['responsible-organisation']:
-            value = responsible_party['organisation-name']
+        value = ""
+        for responsible_party in values["responsible-organisation"]:
+            value = responsible_party["organisation-name"]
             if value:
                 break
-        values['contact'] = value
+        values["contact"] = value
 
     def infer_contact_email(self, values):
-        value = ''
-        for responsible_party in values['responsible-organisation']:
-            if isinstance(responsible_party, dict) and \
-               isinstance(responsible_party.get('contact-info'), dict) and \
-               'email' in responsible_party['contact-info']:
-                value = responsible_party['contact-info']['email']
+        value = ""
+        for responsible_party in values["responsible-organisation"]:
+            if (
+                isinstance(responsible_party, dict)
+                and isinstance(responsible_party.get("contact-info"), dict)
+                and "email" in responsible_party["contact-info"]
+            ):
+                value = responsible_party["contact-info"]["email"]
                 if value:
                     break
-        values['contact-email'] = value
+        values["contact-email"] = value
 
 
 class GeminiDocument(ISODocument):
-    '''
+    """
     For backwards compatibility
-    '''
+    """

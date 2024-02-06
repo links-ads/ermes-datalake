@@ -16,24 +16,18 @@ import ckan.logic.validators as validators
 
 import ckan.lib.navl.dictization_functions as df
 from ckan.lib.navl.dictization_functions import convert
-from ckantoolkit import (
-    get_validator,
-    UnknownValidator,
-    missing,
-    Invalid,
-    StopOnError,
-    _
-)
+from ckantoolkit import get_validator, UnknownValidator, missing, Invalid, StopOnError, _
 
 import ckanext.scheming.helpers as sh
 from ckanext.scheming.errors import SchemingException
 
 log = logging.getLogger(__name__)
-OneOf = get_validator('OneOf')
-ignore_missing = get_validator('ignore_missing')
-not_empty = get_validator('not_empty')
+OneOf = get_validator("OneOf")
+ignore_missing = get_validator("ignore_missing")
+not_empty = get_validator("not_empty")
 
 all_validators = {}
+
 
 def register_validator(fn):
     """
@@ -72,7 +66,7 @@ def scheming_subfields(field, schema):
             #   (<field name>,)
             # and if we're working on a resource it'll be:
             #   ('resources', <resource #>, <field name>)
-            _junk = data.get(key[:-1] + ('__junk',), {})
+            _junk = data.get(key[:-1] + ("__junk",), {})
 
             # Group our unrolled fields by their index.
             values = defaultdict(dict)
@@ -94,7 +88,7 @@ def scheming_subfields(field, schema):
             # when they aren't defined that way in the schema.
             value = [value]
 
-        for subfield in field.get('repeating_subfields', field.get('simple_subfields')):
+        for subfield in field.get("repeating_subfields", field.get("simple_subfields")):
             validators = _field_create_validators(subfield, schema, False)
             for entry in value:
                 # This right here is why we recommend globally unique field
@@ -107,22 +101,12 @@ def scheming_subfields(field, schema):
                 entry_errors = defaultdict(list)
 
                 for v in validators:
-                    convert(
-                        v,
-                        (subfield['field_name'],),
-                        entry_as_data,
-                        entry_errors,
-                        context
-                    )
+                    convert(v, (subfield["field_name"],), entry_as_data, entry_errors, context)
 
                 # Any subfield errors should be added as errors to the parent
                 # since this is the only way we have to let other plugins know
                 # of issues.
-                errors[key].extend(
-                    itertools.chain.from_iterable(
-                        v for v in entry_errors.itervalues()
-                    )
-                )
+                errors[key].extend(itertools.chain.from_iterable(v for v in entry_errors.itervalues()))
 
                 # Pull our potentially modified fields back. What if validators
                 # modified other fields such as a top-level field? Is this
@@ -135,7 +119,7 @@ def scheming_subfields(field, schema):
         # It would be preferable to just always store as a list, but some plugins
         # such as ckanext-restricted make assumptions on how values are stored.
 
-        if 'repeating_subfields' in field:
+        if "repeating_subfields" in field:
             data[key] = json.dumps(value)
         elif value:
             data[key] = json.dumps(value[0])
@@ -153,7 +137,7 @@ def datatype_id_validator(field, schema):
     def validator(value):
         if value is missing or not value:
             return value
-        if (len(value)==5) and (all(char.isdigit() for char in value)):
+        if (len(value) == 5) and (all(char.isdigit() for char in value)):
             return value
         else:
             raise Invalid(_('unexpected value for datatype_id "%s"') % value)
@@ -167,17 +151,17 @@ def scheming_choices(field, schema):
     """
     Require that one of the field choices values is passed.
     """
-    if 'ignore_missing' in field['validators']:
+    if "ignore_missing" in field["validators"]:
         return ignore_missing
-    if 'choices' in field:
-        return OneOf([c['value'] for c in field['choices']])
+    if "choices" in field:
+        return OneOf([c["value"] for c in field["choices"]])
 
     def validator(value):
         if value is missing or not value:
             return value
         choices = sh.scheming_field_choices(field)
         for choice in choices:
-            if value == choice['value']:
+            if value == choice["value"]:
                 return value
         raise Invalid(_('unexpected choice "%s"') % value)
 
@@ -190,8 +174,8 @@ def scheming_required(field, schema):
     """
     not_empty if field['required'] else ignore_missing
     """
-    log.debug('SCHEMING_REQUIRED: required {0}'.format(field.get('required')))
-    if field.get('required'):
+    log.debug("SCHEMING_REQUIRED: required {0}".format(field.get("required")))
+    if field.get("required"):
         return not_empty
     return ignore_missing
 
@@ -200,38 +184,38 @@ def scheming_required(field, schema):
 @register_validator
 def scheming_required_for_spatial(field, schema):
     def validator(key, data, errors, context):
-        resource_type = data[('identification_ResourceType',)]
-        log.info('identification_ResourceType: %s', resource_type)
-        if resource_type != 'nonGeographicDataset':
-            log.info('scheming_required_for_spatial activated - check if the field is not empty')
+        resource_type = data[("identification_ResourceType",)]
+        log.info("identification_ResourceType: %s", resource_type)
+        if resource_type != "nonGeographicDataset":
+            log.info("scheming_required_for_spatial activated - check if the field is not empty")
             not_empty(key, data, errors, context)
         else:
-            log.info('scheming_required_for_spatial activated - ok if empty')
+            log.info("scheming_required_for_spatial activated - ok if empty")
+
     return validator
 
 
 @scheming_validator
 @register_validator
 def datatype_string_convert(field, schema):
-    '''Takes a list of datatype ids that is a comma-separated string (in data[key])
+    """Takes a list of datatype ids that is a comma-separated string (in data[key])
     and parses names. These are added to the data dict, enumerated. They
-    are also validated.'''
-    tags = ''
+    are also validated."""
+    tags = ""
+
     def validator(key, data, errors, context):
         if isinstance(data[key], str):
-            tags = [tag.strip() \
-                    for tag in data[key].split(',') \
-                    if tag.strip()]
+            tags = [tag.strip() for tag in data[key].split(",") if tag.strip()]
         else:
             tags = data[key]
-        
+
         return tags
 
     # current_index = max( [int(k[1]) for k in data.keys() if len(k) == 3 and k[0] == 'datatype'] + [-1] )
 
     # for num, tag in zip(count(current_index+1), tags):
     #     data[('datatype', num, 'name')] = tag
-    
+
     # log.debug('DATATYPE data: {0}'.format(data))
 
     return validator
@@ -240,18 +224,18 @@ def datatype_string_convert(field, schema):
 @scheming_validator
 @register_validator
 def json_to_string(field, schema):
-    '''Takes a list of datatype ids that is a comma-separated string (in data[key])
+    """Takes a list of datatype ids that is a comma-separated string (in data[key])
     and parses names. These are added to the data dict, enumerated. They
-    are also validated.'''
+    are also validated."""
+
     def validator(key, data, errors, context):
-        log.debug(f'J2S: {data[key]}: {type(data[key])}')
+        log.debug(f"J2S: {data[key]}: {type(data[key])}")
         if isinstance(data[key], dict):
             try:
                 data[key] = json.dumps(data[key])
             except:
-                errors[key].append(
-                _('JSON must be provided'))
-        return 
+                errors[key].append(_("JSON must be provided"))
+        return
 
     return validator
 
@@ -272,8 +256,8 @@ def scheming_multiple_choice(field, schema):
        "choice-a"
     """
     static_choice_values = None
-    if 'choices' in field:
-        static_choice_order = [c['value'] for c in field['choices']]
+    if "choices" in field:
+        static_choice_order = [c["value"] for c in field["choices"]]
         static_choice_values = set(static_choice_order)
 
     def validator(key, data, errors, context):
@@ -287,17 +271,14 @@ def scheming_multiple_choice(field, schema):
             if isinstance(value, six.string_types):
                 value = [value]
             elif not isinstance(value, list):
-                errors[key].append(_('expecting list of strings'))
+                errors[key].append(_("expecting list of strings"))
                 return
         else:
             value = []
 
         choice_values = static_choice_values
         if not choice_values:
-            choice_order = [
-                choice['value']
-                for choice in sh.scheming_field_choices(field)
-            ]
+            choice_order = [choice["value"] for choice in sh.scheming_field_choices(field)]
             choice_values = set(choice_order)
 
         selected = set()
@@ -308,26 +289,24 @@ def scheming_multiple_choice(field, schema):
             errors[key].append(_('unexpected choice "%s"') % element)
 
         if not errors[key]:
-            data[key] = json.dumps([
-                v for v in
-                (static_choice_order if static_choice_values else choice_order)
-                if v in selected
-            ])
+            data[key] = json.dumps(
+                [v for v in (static_choice_order if static_choice_values else choice_order) if v in selected]
+            )
 
-            if field.get('required') and not selected:
-                errors[key].append(_('Select at least one'))
+            if field.get("required") and not selected:
+                errors[key].append(_("Select at least one"))
 
     return validator
 
 
 def validate_date_inputs(field, key, data, extras, errors, context):
-    date_error = _('Date format incorrect')
-    time_error = _('Time format incorrect')
+    date_error = _("Date format incorrect")
+    time_error = _("Time format incorrect")
 
     date = None
 
     def get_input(suffix):
-        inpt = key[0] + '_' + suffix
+        inpt = key[0] + "_" + suffix
         new_key = (inpt,) + tuple(x for x in key if x != key[0])
         key_value = extras.get(inpt)
         data[new_key] = key_value
@@ -336,13 +315,13 @@ def validate_date_inputs(field, key, data, extras, errors, context):
         if key_value:
             del extras[inpt]
 
-        if field.get('required'):
+        if field.get("required"):
             not_empty(new_key, data, errors, context)
 
         return new_key, key_value
 
-    date_key, value = get_input('date')
-    value_full = ''
+    date_key, value = get_input("date")
+    value_full = ""
 
     if value:
         try:
@@ -351,22 +330,21 @@ def validate_date_inputs(field, key, data, extras, errors, context):
         except (TypeError, ValueError) as e:
             errors[date_key].append(date_error)
 
-    time_key, value = get_input('time')
+    time_key, value = get_input("time")
     if value:
         if not value_full:
-            errors[date_key].append(
-                _('Date is required when a time is provided'))
+            errors[date_key].append(_("Date is required when a time is provided"))
         else:
             try:
-                value_full += ' ' + value
+                value_full += " " + value
                 date = h.date_str_to_datetime(value_full)
             except (TypeError, ValueError) as e:
                 errors[time_key].append(time_error)
 
-    tz_key, value = get_input('tz')
+    tz_key, value = get_input("tz")
     if value:
         if value not in pytz.all_timezones:
-            errors[tz_key].append('Invalid timezone')
+            errors[tz_key].append("Invalid timezone")
         else:
             if isinstance(date, datetime.datetime):
                 date = pytz.timezone(value).localize(date)
@@ -388,16 +366,14 @@ def scheming_isodatetime(field, schema):
                 try:
                     date = h.date_str_to_datetime(value)
                 except (TypeError, ValueError) as e:
-                    raise Invalid(_('Date format incorrect'))
+                    raise Invalid(_("Date format incorrect"))
         else:
-            extras = data.get(('__extras',))
-            if not extras or (key[0] + '_date' not in extras and
-                              key[0] + '_time' not in extras):
-                if field.get('required'):
+            extras = data.get(("__extras",))
+            if not extras or (key[0] + "_date" not in extras and key[0] + "_time" not in extras):
+                if field.get("required"):
                     not_empty(key, data, errors, context)
             else:
-                date = validate_date_inputs(
-                    field, key, data, extras, errors, context)
+                date = validate_date_inputs(field, key, data, extras, errors, context)
 
         data[key] = date
 
@@ -417,16 +393,14 @@ def scheming_isodatetime_tz(field, schema):
                 try:
                     date = sh.date_tz_str_to_datetime(value)
                 except (TypeError, ValueError) as e:
-                    raise Invalid(_('Date format incorrect'))
+                    raise Invalid(_("Date format incorrect"))
         else:
-            extras = data.get(('__extras',))
-            if not extras or (key[0] + '_date' not in extras and
-                              key[0] + '_time' not in extras):
-                if field.get('required'):
+            extras = data.get(("__extras",))
+            if not extras or (key[0] + "_date" not in extras and key[0] + "_time" not in extras):
+                if field.get("required"):
                     not_empty(key, data, errors, context)
             else:
-                date = validate_date_inputs(
-                    field, key, data, extras, errors, context)
+                date = validate_date_inputs(field, key, data, extras, errors, context)
                 if isinstance(date, datetime.datetime):
                     date = sh.scheming_datetime_to_utc(date)
 
@@ -451,23 +425,19 @@ def scheming_valid_json_object(value, context):
             loaded = json.loads(value)
 
             if not isinstance(loaded, dict):
-                raise Invalid(
-                    _('Unsupported value for JSON field: {}').format(value)
-                )
+                raise Invalid(_("Unsupported value for JSON field: {}").format(value))
 
             return value
         except (ValueError, TypeError) as e:
-            raise Invalid(_('Invalid JSON string: {}').format(e))
+            raise Invalid(_("Invalid JSON string: {}").format(e))
 
     elif isinstance(value, dict):
         try:
             return json.dumps(value)
         except (ValueError, TypeError) as e:
-            raise Invalid(_('Invalid JSON object: {}').format(e))
+            raise Invalid(_("Invalid JSON object: {}").format(e))
     else:
-        raise Invalid(
-            _('Unsupported type for JSON field: {}').format(type(value))
-        )
+        raise Invalid(_("Unsupported type for JSON field: {}").format(type(value)))
 
 
 @register_validator
@@ -503,13 +473,13 @@ def validators_from_string(s, field, schema):
     out = []
     parts = s.split()
     for p in parts:
-        if '(' in p and p[-1] == ')':
-            name, args = p.split('(', 1)
-            args = args[:-1].split(',')  # trim trailing ')', break up
+        if "(" in p and p[-1] == ")":
+            name, args = p.split("(", 1)
+            args = args[:-1].split(",")  # trim trailing ')', break up
             v = get_validator_or_converter(name)(*args)
         else:
             v = get_validator_or_converter(p)
-        if getattr(v, 'is_a_scheming_validator', False):
+        if getattr(v, "is_a_scheming_validator", False):
             v = v(field, schema)
         out.append(v)
     return out
@@ -519,14 +489,14 @@ def get_validator_or_converter(name):
     """
     Get a validator or converter by name
     """
-    if name == 'unicode':
+    if name == "unicode":
         return six.text_type
     try:
         v = get_validator(name)
         return v
     except UnknownValidator:
         pass
-    raise SchemingException('validator/converter not found: %r' % name)
+    raise SchemingException("validator/converter not found: %r" % name)
 
 
 def convert_from_extras_group(key, data, errors, context):
@@ -535,17 +505,14 @@ def convert_from_extras_group(key, data, errors, context):
     def remove_from_extras(data, key):
         to_remove = []
         for data_key, data_value in data.items():
-            if (data_key[0] == 'extras'
-                    and data_key[1] == key):
+            if data_key[0] == "extras" and data_key[1] == key:
                 to_remove.append(data_key)
         for item in to_remove:
             del data[item]
 
     for data_key, data_value in data.items():
-        if (data_key[0] == 'extras'
-            and 'key' in data_value
-                and data_value['key'] == key[-1]):
-            data[key] = data_value['value']
+        if data_key[0] == "extras" and "key" in data_value and data_value["key"] == key[-1]:
+            data[key] = data_value["value"]
             break
     else:
         return
@@ -567,9 +534,9 @@ def license_fill(data):
     def callable(key, data, errors, context):
 
         # log.info("LICENSE FILL data: %r ", data)
-        license_id = data[('constraints_conditions_for_access_and_use',)]
+        license_id = data[("constraints_conditions_for_access_and_use",)]
         log.info("LICENSE FILL license_id: %r ", license_id)
-        data[('license_id', )] = license_id
+        data[("license_id",)] = license_id
         return license_id
 
     return callable
@@ -583,8 +550,8 @@ def scheming_isodatetime_tz_resource(field, schema):
         date = None
         field_name = key[2]
         num_res = key[1]
-        log.debug(f'datetime: {field_name}')
-        log.debug(f'datetime: {num_res}')
+        log.debug(f"datetime: {field_name}")
+        log.debug(f"datetime: {num_res}")
         if value:
             if isinstance(value, datetime.datetime):
                 date = sh.scheming_datetime_to_utc(value)
@@ -592,20 +559,18 @@ def scheming_isodatetime_tz_resource(field, schema):
                 try:
                     date = sh.date_tz_str_to_datetime(value)
                 except (TypeError, ValueError) as e:
-                    raise Invalid(_('Date format incorrect'))
+                    raise Invalid(_("Date format incorrect"))
         else:
-            extras = data.get(('resources', num_res, '__extras'))
-            if not extras or (field_name + '_date' not in extras and
-                              field_name + '_time' not in extras):
-                if field.get('required'):
+            extras = data.get(("resources", num_res, "__extras"))
+            if not extras or (field_name + "_date" not in extras and field_name + "_time" not in extras):
+                if field.get("required"):
                     not_empty((field_name,), data, errors, context)
             else:
-                date = validate_date_inputs(
-                    field, (field_name,), data, extras, errors, context)
+                date = validate_date_inputs(field, (field_name,), data, extras, errors, context)
                 if isinstance(date, datetime.datetime):
                     date = sh.scheming_datetime_to_utc(date)
 
-        log.debug(f'datetime: {date}')
+        log.debug(f"datetime: {date}")
         data[key] = date
 
     return validator
@@ -624,26 +589,29 @@ def datetime_fill(key, data, inherit_from):
 @register_validator
 def datetime_start_fill(data):
     def callable(key, data, errors, context):
-        return datetime_fill(key, data, ('data_temporal_extent_begin_date',))
+        return datetime_fill(key, data, ("data_temporal_extent_begin_date",))
+
     return callable
 
 
 @register_validator
 def datetime_end_fill(data):
     def callable(key, data, errors, context):
-        return datetime_fill(key, data, ('data_temporal_extent_end_date',))
+        return datetime_fill(key, data, ("data_temporal_extent_end_date",))
+
     return callable
+
 
 @register_validator
 def author_fill(data, context):
-    user_dict = context.get('auth_user_obj').__dict__
-    return user_dict['name']
+    user_dict = context.get("auth_user_obj").__dict__
+    return user_dict["name"]
 
 
 @register_validator
 def author_email_fill(data, context):
-    user_dict = context.get('auth_user_obj').__dict__
-    return user_dict['email']
+    user_dict = context.get("auth_user_obj").__dict__
+    return user_dict["email"]
 
 
 @register_validator
@@ -653,22 +621,20 @@ def convert_strings_to_tags(vocab):
         if not new_tags:
             return
         if isinstance(data[key], six.string_types):
-            new_tags = [tag.strip() \
-                    for tag in data[key].split(',') \
-                    if tag.strip()]
+            new_tags = [tag.strip() for tag in data[key].split(",") if tag.strip()]
         else:
             new_tags = data[key]
 
         # get current number of tags
         n = 0
         for k in data.keys():
-            if k[0] == 'tags':
+            if k[0] == "tags":
                 n = max(n, k[1] + 1)
 
         v = model.Vocabulary.get(vocab)
         if not v:
             raise df.Invalid(_('Tag vocabulary "%s" does not exist') % vocab)
-        context['vocabulary'] = v
+        context["vocabulary"] = v
 
         for tag in new_tags:
             validators.tag_in_vocabulary_validator(tag, context)
@@ -676,7 +642,9 @@ def convert_strings_to_tags(vocab):
         # for num, tag in enumerate(new_tags):
         #     data[('tags', num + n, 'name')] = tag
         #     data[('tags', num + n, 'vocabulary_id')] = v.id
+
     return callable
+
 
 @register_validator
 def convert_to_json_if_datetime(date, context):
@@ -703,6 +671,7 @@ def scheming_multiple_text(field, schema):
 
        "Person One"
     """
+
     def _scheming_multiple_text(key, data, errors, context):
         # just in case there was an error before our validator,
         # bail out here because our errors won't be useful
@@ -715,7 +684,7 @@ def scheming_multiple_text(field, schema):
             if isinstance(value, six.string_types):
                 value = [value]
             if not isinstance(value, list):
-                errors[key].append(_('expecting list of strings'))
+                errors[key].append(_("expecting list of strings"))
                 raise StopOnError
 
             out = []
@@ -724,15 +693,13 @@ def scheming_multiple_text(field, schema):
                     continue
 
                 if not isinstance(element, six.string_types):
-                    errors[key].append(_('invalid type for repeating text: %r')
-                                       % element)
+                    errors[key].append(_("invalid type for repeating text: %r") % element)
                     continue
                 if isinstance(element, six.binary_type):
                     try:
-                        element = element.decode('utf-8')
+                        element = element.decode("utf-8")
                     except UnicodeDecodeError:
-                        errors[key]. append(_('invalid encoding for "%s" value')
-                                            % element)
+                        errors[key].append(_('invalid encoding for "%s" value') % element)
                         continue
 
                 out.append(element)
@@ -742,8 +709,8 @@ def scheming_multiple_text(field, schema):
 
             data[key] = json.dumps(out)
 
-        if (data[key] is missing or data[key] == '[]') and field.get('required'):
-            errors[key].append(_('Missing value'))
+        if (data[key] is missing or data[key] == "[]") and field.get("required"):
+            errors[key].append(_("Missing value"))
             raise StopOnError
 
     return _scheming_multiple_text

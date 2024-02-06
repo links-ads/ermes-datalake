@@ -12,28 +12,25 @@ def with_driver_options(ckan_config, monkeypatch):
     credentials.
 
     """
-    driver = os.getenv('TEST_DRIVER')
+    driver = os.getenv("TEST_DRIVER")
 
     if not driver:
-        pytest.skip('TEST_DRIVER is not set')
-    monkeypatch.setitem(ckan_config, 'ckanext.cloudstorage.driver', driver)
+        pytest.skip("TEST_DRIVER is not set")
+    monkeypatch.setitem(ckan_config, "ckanext.cloudstorage.driver", driver)
 
-    container = os.getenv('TEST_CONTAINER')
+    container = os.getenv("TEST_CONTAINER")
     if not container:
-        pytest.skip('TEST_CONTAINER is not set')
-    monkeypatch.setitem(ckan_config,
-                        'ckanext.cloudstorage.container_name', container)
+        pytest.skip("TEST_CONTAINER is not set")
+    monkeypatch.setitem(ckan_config, "ckanext.cloudstorage.container_name", container)
 
-    options = os.getenv('TEST_DRIVER_OPTIONS')
+    options = os.getenv("TEST_DRIVER_OPTIONS")
     if not options:
-        pytest.skip('TEST_DRIVER_OPTIONS is not set')
-    monkeypatch.setitem(ckan_config,
-                        'ckanext.cloudstorage.driver_options', options)
+        pytest.skip("TEST_DRIVER_OPTIONS is not set")
+    monkeypatch.setitem(ckan_config, "ckanext.cloudstorage.driver_options", options)
 
 
 @pytest.fixture
 def clean_db(reset_db):
-    """Initialize extension's tables.
-    """
+    """Initialize extension's tables."""
     reset_db()
     utils.initdb()

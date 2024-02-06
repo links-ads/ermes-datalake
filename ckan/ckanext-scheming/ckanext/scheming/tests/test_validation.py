@@ -38,34 +38,27 @@ class TestChoices(object):
         lc = LocalCKAN()
 
         try:
-            lc.action.package_create(
-                type="test-schema", name="fred_choices1", category="rocker"
-            )
+            lc.action.package_create(type="test-schema", name="fred_choices1", category="rocker")
         except ValidationError as e:
             if check_ckan_version("2.9"):
                 expected = "Value must be one of {}".format(
                     [
-                        u"bactrian",
-                        u"hybrid",
-                        u"f2hybrid",
-                        u"snowwhite",
-                        u"black",
+                        "bactrian",
+                        "hybrid",
+                        "f2hybrid",
+                        "snowwhite",
+                        "black",
                     ]
                 )
             else:
-                expected = (
-                    "Value must be one of: bactrian; hybrid; f2hybrid; "
-                    "snowwhite; black (not 'rocker')"
-                )
+                expected = "Value must be one of: bactrian; hybrid; f2hybrid; " "snowwhite; black (not 'rocker')"
             assert e.error_dict["category"] == [expected]
         else:
             raise AssertionError("ValidationError not raised")
 
     def test_choice_field_accepts_valid_choice(self):
         lc = LocalCKAN()
-        d = lc.action.package_create(
-            type="test-schema", name="fred_choices2", category="f2hybrid"
-        )
+        d = lc.action.package_create(type="test-schema", name="fred_choices2", category="f2hybrid")
         assert d["category"] == "f2hybrid"
 
 
@@ -119,9 +112,7 @@ class TestDates(object):
 
     def test_date_field_valid_date_str(self):
         lc = LocalCKAN()
-        d = lc.action.package_create(
-            type="test-schema", name="fred_date4", a_relevant_date="2014-01-01"
-        )
+        d = lc.action.package_create(type="test-schema", name="fred_date4", a_relevant_date="2014-01-01")
         assert d["a_relevant_date"] == "2014-01-01"
 
     def test_date_field_valid_date_datetime(self):
@@ -158,9 +149,7 @@ class TestDateTimes(object):
                 a_relevant_datetime="this-is-not-a-date",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -173,9 +162,7 @@ class TestDateTimes(object):
                 a_relevant_datetime="31/11/abcd",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -188,9 +175,7 @@ class TestDateTimes(object):
                 a_relevant_datetime="2014-11-15Tabcd",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -203,9 +188,7 @@ class TestDateTimes(object):
                 a_relevant_datetime="2014-11-15T12:00:ab",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -218,9 +201,7 @@ class TestDateTimes(object):
                 a_relevant_datetime="31/11/2014",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -251,9 +232,7 @@ class TestDateTimes(object):
                 a_relevant_datetime_date="31/11/2014",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_date"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_date"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -267,9 +246,7 @@ class TestDateTimes(object):
                 a_relevant_datetime_time="12:35:aa",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_time"] == [
-                "Time format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_time"] == ["Time format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -282,9 +259,7 @@ class TestDateTimes(object):
                 a_relevant_datetime_time="12:35:00",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_date"] == [
-                "Date is required when a time is provided"
-            ]
+            assert e.error_dict["a_relevant_datetime_date"] == ["Date is required when a time is provided"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -323,9 +298,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz="this-is-not-a-date",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -338,9 +311,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz="31/11/abcd",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -353,9 +324,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz="2014-11-15Tabcd",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -368,9 +337,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz="2014-11-15T12:00:ab",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -383,9 +350,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz="31/11/2014",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -398,9 +363,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz="2014-11-15T12:00:00A",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -413,9 +376,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz="2014-11-15T12:00:00+abc",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -465,9 +426,7 @@ class TestDateTimesTZ(object):
         d = lc.action.package_create(
             type="test-schema",
             name="fred_datetime_tz11",
-            a_relevant_datetime_tz=datetime.datetime(
-                2014, 1, 1, 12, 35, tzinfo=pytz.timezone("America/New_York")
-            ),
+            a_relevant_datetime_tz=datetime.datetime(2014, 1, 1, 12, 35, tzinfo=pytz.timezone("America/New_York")),
         )
 
     def test_datetime_field_rejects_invalid_separate_date(self):
@@ -479,9 +438,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz_date="31/11/2014",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz_date"] == [
-                "Date format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz_date"] == ["Date format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -495,9 +452,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz_time="12:35:aa",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz_time"] == [
-                "Time format incorrect"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz_time"] == ["Time format incorrect"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -512,9 +467,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz_tz="Krypton/Argo City",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz_tz"] == [
-                "Invalid timezone"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz_tz"] == ["Invalid timezone"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -527,9 +480,7 @@ class TestDateTimesTZ(object):
                 a_relevant_datetime_tz_time="12:35:00",
             )
         except ValidationError as e:
-            assert e.error_dict["a_relevant_datetime_tz_date"] == [
-                "Date is required when a time is provided"
-            ]
+            assert e.error_dict["a_relevant_datetime_tz_date"] == ["Date is required when a time is provided"]
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -638,13 +589,9 @@ class TestJSONValidatorsDatasetInvalid(object):
         lc = LocalCKAN()
 
         try:
-            lc.action.package_create(
-                type="test-schema", name="bob_json_1", a_json_field="not-json"
-            )
+            lc.action.package_create(type="test-schema", name="bob_json_1", a_json_field="not-json")
         except ValidationError as e:
-            assert e.error_dict["a_json_field"][0].startswith(
-                "Invalid JSON string:"
-            )
+            assert e.error_dict["a_json_field"][0].startswith("Invalid JSON string:")
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -653,13 +600,9 @@ class TestJSONValidatorsDatasetInvalid(object):
         values = ["22", "true", "false", "null", "[1,2,3]"]
         for value in values:
             try:
-                lc.action.package_create(
-                    type="test-schema", name="bob_json_1", a_json_field=value
-                )
+                lc.action.package_create(type="test-schema", name="bob_json_1", a_json_field=value)
             except ValidationError as e:
-                assert e.error_dict["a_json_field"][0].startswith(
-                    "Unsupported value for JSON field"
-                )
+                assert e.error_dict["a_json_field"][0].startswith("Unsupported value for JSON field")
             else:
                 raise AssertionError("ValidationError not raised")
 
@@ -672,9 +615,7 @@ class TestJSONValidatorsDatasetInvalid(object):
                 a_json_field='{"type": "walnut", "codes": 1, 2 ,3}',
             )
         except ValidationError as e:
-            assert e.error_dict["a_json_field"][0].startswith(
-                "Invalid JSON string: Expecting property name"
-            )
+            assert e.error_dict["a_json_field"][0].startswith("Invalid JSON string: Expecting property name")
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -690,12 +631,8 @@ class TestJSONValidatorsDatasetInvalid(object):
                 },
             )
         except ValidationError as e:
-            assert e.error_dict["a_json_field"][0].startswith(
-                "Invalid JSON object:"
-            )
-            assert e.error_dict["a_json_field"][0].endswith(
-                "is not JSON serializable"
-            )
+            assert e.error_dict["a_json_field"][0].startswith("Invalid JSON object:")
+            assert e.error_dict["a_json_field"][0].endswith("is not JSON serializable")
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -705,13 +642,9 @@ class TestJSONValidatorsDatasetInvalid(object):
         values = [True, datetime.datetime.utcnow(), (2, 3), 23, [1, 2, 3]]
         for value in values:
             try:
-                lc.action.package_create(
-                    type="test-schema", name="bob_json_1", a_json_field=value
-                )
+                lc.action.package_create(type="test-schema", name="bob_json_1", a_json_field=value)
             except ValidationError as e:
-                assert e.error_dict["a_json_field"][0].startswith(
-                    "Unsupported type for JSON field:"
-                )
+                assert e.error_dict["a_json_field"][0].startswith("Unsupported type for JSON field:")
             else:
                 raise AssertionError("ValidationError not raised")
 
@@ -731,9 +664,7 @@ class TestJSONValidatorsResourceInvalid(object):
                 ],
             )
         except ValidationError as e:
-            assert e.error_dict["resources"][0]["a_resource_json_field"][
-                0
-            ].startswith("Invalid JSON string:")
+            assert e.error_dict["resources"][0]["a_resource_json_field"][0].startswith("Invalid JSON string:")
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -753,9 +684,9 @@ class TestJSONValidatorsResourceInvalid(object):
                     ],
                 )
             except ValidationError as e:
-                assert e.error_dict["resources"][0]["a_resource_json_field"][
-                    0
-                ].startswith("Unsupported value for JSON field")
+                assert e.error_dict["resources"][0]["a_resource_json_field"][0].startswith(
+                    "Unsupported value for JSON field"
+                )
             else:
                 raise AssertionError("ValidationError not raised")
 
@@ -773,9 +704,9 @@ class TestJSONValidatorsResourceInvalid(object):
                 ],
             )
         except ValidationError as e:
-            assert e.error_dict["resources"][0]["a_resource_json_field"][
-                0
-            ].startswith("Invalid JSON string: Expecting property name")
+            assert e.error_dict["resources"][0]["a_resource_json_field"][0].startswith(
+                "Invalid JSON string: Expecting property name"
+            )
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -796,12 +727,8 @@ class TestJSONValidatorsResourceInvalid(object):
                 ],
             )
         except ValidationError as e:
-            assert e.error_dict["resources"][0]["a_resource_json_field"][
-                0
-            ].startswith("Invalid JSON object:")
-            assert e.error_dict["resources"][0]["a_resource_json_field"][
-                0
-            ].endswith("is not JSON serializable")
+            assert e.error_dict["resources"][0]["a_resource_json_field"][0].startswith("Invalid JSON object:")
+            assert e.error_dict["resources"][0]["a_resource_json_field"][0].endswith("is not JSON serializable")
         else:
             raise AssertionError("ValidationError not raised")
 
@@ -822,9 +749,9 @@ class TestJSONValidatorsResourceInvalid(object):
                     ],
                 )
             except ValidationError as e:
-                assert e.error_dict["resources"][0]["a_resource_json_field"][
-                    0
-                ].startswith("Unsupported type for JSON field:")
+                assert e.error_dict["resources"][0]["a_resource_json_field"][0].startswith(
+                    "Unsupported type for JSON field:"
+                )
             else:
                 raise AssertionError("ValidationError not raised")
 
@@ -836,16 +763,13 @@ class TestSubfieldDatasetValid(object):
         dataset = lc.action.package_create(
             type="test-subfields",
             name="a_sf_1",
-            citation=[
-                {"originator": ["mei"], "publication_date": "2021-01-01"},
-                {"originator": ["ahmed"]}
-            ],
+            citation=[{"originator": ["mei"], "publication_date": "2021-01-01"}, {"originator": ["ahmed"]}],
             contact_address=[{"address": "anyplace"}],
         )
 
         assert dataset["citation"] == [
             {"originator": ["mei"], "publication_date": "2021-01-01"},
-            {"originator": ["ahmed"]}
+            {"originator": ["ahmed"]},
         ]
         assert dataset["contact_address"] == [{"address": "anyplace"}]
 
@@ -886,10 +810,7 @@ class TestSubfieldDatasetInvalid(object):
             lc.action.package_create(
                 type="test-subfields",
                 name="b_sf_1",
-                citation=[
-                    {"originator": ["mei"], "publication_date": "yesterday"},
-                    {"originator": ["ahmed"]}
-                ],
+                citation=[{"originator": ["mei"], "publication_date": "yesterday"}, {"originator": ["ahmed"]}],
                 contact_address=[{"address": "anyplace"}],
             )
         except ValidationError as e:
@@ -911,7 +832,7 @@ class TestSubfieldResourceValid(object):
                     "schedule": [
                         {"impact": "A", "frequency": "1m"},
                         {"impact": "P", "frequency": "7d"},
-                    ]
+                    ],
                 }
             ],
         )
@@ -935,12 +856,11 @@ class TestSubfieldResourceInvalid(object):
                         "schedule": [
                             {"impact": "Q", "frequency": "1m"},
                             {"impact": "P", "frequency": "7d"},
-                        ]
+                        ],
                     }
                 ],
             )
         except ValidationError as e:
-            assert e.error_dict["resources"][0]["schedule"][0]["impact"][0
-                ].startswith("Value must be one of")
+            assert e.error_dict["resources"][0]["schedule"][0]["impact"][0].startswith("Value must be one of")
         else:
             raise AssertionError("ValidationError not raised")

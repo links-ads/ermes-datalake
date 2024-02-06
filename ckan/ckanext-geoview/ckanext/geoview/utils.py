@@ -39,11 +39,11 @@ OGC_EXCLUDED_PARAMS = [
 
 
 def proxy_service_resource(request, context, data_dict):
-    """ Chunked proxy for resources. To make sure that the file is not too
+    """Chunked proxy for resources. To make sure that the file is not too
     large, first, we try to get the content length from the headers.
     If the headers to not contain a content length (if it is a chinked
     response), we only transfer as long as the transferred data is less
-    than the maximum file size. """
+    than the maximum file size."""
     resource_id = data_dict["resource_id"]
     log.info("Proxify resource {id}".format(id=resource_id))
     resource = logic.get_action("resource_show")(context, {"id": resource_id})
@@ -62,11 +62,7 @@ def proxy_service_url(req, url):
 
         params = parse_qs(parts.query)
 
-        if not p.toolkit.asbool(
-            base.config.get(
-                "ckanext.geoview.forward_ogc_request_params", "False"
-            )
-        ):
+        if not p.toolkit.asbool(base.config.get("ckanext.geoview.forward_ogc_request_params", "False")):
             # remove query parameters that may conflict with OGC protocols
             for key in dict(params):
                 if key.lower() in OGC_EXCLUDED_PARAMS:
@@ -148,49 +144,29 @@ def get_common_map_config():
     base map (ie those starting with 'ckanext.spatial.common_map.')
     """
     namespace = "ckanext.spatial.common_map."
-    return dict(
-        [
-            (k.replace(namespace, ""), v)
-            for k, v in toolkit.config.items()
-            if k.startswith(namespace)
-        ]
-    )
+    return dict([(k.replace(namespace, ""), v) for k, v in toolkit.config.items() if k.startswith(namespace)])
 
 
 def get_shapefile_viewer_config():
     """
-        Returns a dict with all configuration options related to the
-        Shapefile viewer (ie those starting with 'ckanext.geoview.shp_viewer.')
+    Returns a dict with all configuration options related to the
+    Shapefile viewer (ie those starting with 'ckanext.geoview.shp_viewer.')
     """
     namespace = "ckanext.geoview.shp_viewer."
-    return dict(
-        [
-            (k.replace(namespace, ""), v)
-            for k, v in toolkit.config.items()
-            if k.startswith(namespace)
-        ]
-    )
+    return dict([(k.replace(namespace, ""), v) for k, v in toolkit.config.items() if k.startswith(namespace)])
 
 
 def get_max_file_size():
-    return toolkit.config.get(
-        "ckanext.geoview.geojson.max_file_size", GEOJSON_MAX_FILE_SIZE
-    )
+    return toolkit.config.get("ckanext.geoview.geojson.max_file_size", GEOJSON_MAX_FILE_SIZE)
 
 
 def get_openlayers_viewer_config():
     """
-        Returns a dict with all configuration options related to the
-        OpenLayers viewer (ie those starting with 'ckanext.geoview.ol_viewer.')
+    Returns a dict with all configuration options related to the
+    OpenLayers viewer (ie those starting with 'ckanext.geoview.ol_viewer.')
     """
     namespace = "ckanext.geoview.ol_viewer."
-    return dict(
-        [
-            (k.replace(namespace, ""), v)
-            for k, v in toolkit.config.items()
-            if k.startswith(namespace)
-        ]
-    )
+    return dict([(k.replace(namespace, ""), v) for k, v in toolkit.config.items() if k.startswith(namespace)])
 
 
 def load_basemaps(basemapsFile):
@@ -215,7 +191,7 @@ def get_proxified_service_url(data_dict):
     """
     url = h.url_for(
         action="proxy_service",
-        controller='service_proxy',
+        controller="service_proxy",
         id=data_dict["package"]["name"],
         resource_id=data_dict["resource"]["id"],
     )

@@ -21,23 +21,21 @@ class ApiController(BaseApiController):
 
     def spatial_query(self):
 
-        error_400_msg = \
-            'Please provide a suitable bbox parameter [minx,miny,maxx,maxy]'
+        error_400_msg = "Please provide a suitable bbox parameter [minx,miny,maxx,maxy]"
 
-        if 'bbox' not in request.params:
+        if "bbox" not in request.params:
             abort(400, error_400_msg)
 
-        bbox = validate_bbox(request.params['bbox'])
+        bbox = validate_bbox(request.params["bbox"])
 
         if not bbox:
             abort(400, error_400_msg)
 
-        srid = get_srid(request.params.get('crs')) if 'crs' in \
-            request.params else None
+        srid = get_srid(request.params.get("crs")) if "crs" in request.params else None
 
         extents = bbox_query(bbox, srid)
 
-        format = request.params.get('format', '')
+        format = request.params.get("format", "")
 
         return self._output_results(extents, format)
 
@@ -53,19 +51,20 @@ class HarvestMetadataApiController(BaseApiController):
 
     def _get_content(self, id):
 
-        obj = Session.query(HarvestObject) \
-                        .filter(HarvestObject.id == id).first()
+        obj = Session.query(HarvestObject).filter(HarvestObject.id == id).first()
         if obj:
             return obj.content
         else:
             return None
 
     def _get_original_content(self, id):
-        extra = Session.query(HarvestObjectExtra).join(HarvestObject) \
-                        .filter(HarvestObject.id == id) \
-                        .filter(
-                            HarvestObjectExtra.key == 'original_document'
-                        ).first()
+        extra = (
+            Session.query(HarvestObjectExtra)
+            .join(HarvestObject)
+            .filter(HarvestObject.id == id)
+            .filter(HarvestObjectExtra.key == "original_document")
+            .first()
+        )
         if extra:
             return extra.value
         else:
@@ -74,8 +73,7 @@ class HarvestMetadataApiController(BaseApiController):
     def _transform_to_html(self, content, xslt_package=None, xslt_path=None):
 
         xslt_package = xslt_package or __name__
-        xslt_path = xslt_path or \
-            '../templates/ckanext/spatial/gemini2-html-stylesheet.xsl'
+        xslt_path = xslt_path or "../templates/ckanext/spatial/gemini2-html-stylesheet.xsl"
 
         # optimise -- read transform only once and compile rather
         # than at each request
@@ -86,8 +84,8 @@ class HarvestMetadataApiController(BaseApiController):
         xml = etree.parse(StringIO(content and six.text_type(content)))
         html = transformer(xml)
 
-        response.headers['Content-Type'] = 'text/html; charset=utf-8'
-        response.headers['Content-Length'] = len(content)
+        response.headers["Content-Type"] = "text/html; charset=utf-8"
+        response.headers["Content-Length"] = len(content)
 
         result = etree.tostring(html, pretty_print=True)
 
@@ -96,23 +94,22 @@ class HarvestMetadataApiController(BaseApiController):
     def _get_xslt(self, original=False):
 
         if original:
-            config_option = \
-                'ckanext.spatial.harvest.xslt_html_content_original'
+            config_option = "ckanext.spatial.harvest.xslt_html_content_original"
         else:
-            config_option = 'ckanext.spatial.harvest.xslt_html_content'
+            config_option = "ckanext.spatial.harvest.xslt_html_content"
 
         xslt_package = None
         xslt_path = None
         xslt = config.get(config_option, None)
         if xslt:
-            if ':' in xslt:
-                xslt = xslt.split(':')
+            if ":" in xslt:
+                xslt = xslt.split(":")
                 xslt_package = xslt[0]
                 xslt_path = xslt[1]
             else:
                 log.error(
-                    'XSLT should be defined in the form <package>:<path>' +
-                    ', eg ckanext.myext:templates/my.xslt')
+                    "XSLT should be defined in the form <package>:<path>" + ", eg ckanext.myext:templates/my.xslt"
+                )
 
         return xslt_package, xslt_path
 
@@ -122,12 +119,12 @@ class HarvestMetadataApiController(BaseApiController):
         if not content:
             abort(404)
 
-        response.headers['Content-Type'] = 'application/xml; charset=utf-8'
-        response.headers['Content-Length'] = len(content)
+        response.headers["Content-Type"] = "application/xml; charset=utf-8"
+        response.headers["Content-Length"] = len(content)
 
-        if '<?xml' not in content.split('\n')[0]:
-            content = u'<?xml version="1.0" encoding="UTF-8"?>\n' + content
-        return content.encode('utf-8')
+        if "<?xml" not in content.split("\n")[0]:
+            content = '<?xml version="1.0" encoding="UTF-8"?>\n' + content
+        return content.encode("utf-8")
 
     def display_html(self, id):
         content = self._get_content(id)

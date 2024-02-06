@@ -19,13 +19,13 @@ class CustomUserController(UserController):
     that a fullname is given.
     """
 
-    new_user_form = 'user/register.html'
+    new_user_form = "user/register.html"
 
     def _add_requires_full_name_to_schema(self, schema):
         """
         Helper function that modifies the fullname validation on an existing schema
         """
-        schema['fullname'] = [not_empty, unicode]
+        schema["fullname"] = [not_empty, unicode]
 
     def _new_form_to_db_schema(self):
         """
@@ -49,4 +49,3 @@ class CustomUserController(UserController):
         schema = super(CustomUserController, self)._edit_form_to_db_schema()
         self._add_requires_full_name_to_schema(schema)
         return schema
-

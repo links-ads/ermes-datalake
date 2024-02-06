@@ -9,8 +9,9 @@ import ckanext.spatial.util as util
 
 log = logging.getLogger(__name__)
 
+
 class Spatial(CkanCommand):
-    '''Performs spatially related operations.
+    """Performs spatially related operations.
 
     Usage:
         spatial initdb [srid]
@@ -28,27 +29,27 @@ class Spatial(CkanCommand):
 
         paster extents update --config=../ckan/development.ini
 
-    '''
+    """
 
-    summary = __doc__.split('\n')[0]
+    summary = __doc__.split("\n")[0]
     usage = __doc__
     max_args = 2
     min_args = 0
 
     def command(self):
         self._load_config()
-        print('')
+        print("")
 
         if len(self.args) == 0:
             self.parser.print_usage()
             sys.exit(1)
         cmd = self.args[0]
-        if cmd == 'initdb':
+        if cmd == "initdb":
             self.initdb()
-        elif cmd == 'extents':
+        elif cmd == "extents":
             self.update_extents()
         else:
-            print('Command %s not recognized' % cmd)
+            print("Command %s not recognized" % cmd)
 
     def initdb(self):
         if len(self.args) >= 2:

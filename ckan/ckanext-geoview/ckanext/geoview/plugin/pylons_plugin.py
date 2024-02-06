@@ -9,18 +9,16 @@ class GeoViewMixin(p.SingletonPlugin):
     # IRoutes
 
     def before_map(self, m):
-        controller = (
-            "ckanext.geoview.controllers.service_proxy:ServiceProxyController"
-        )
+        controller = "ckanext.geoview.controllers.service_proxy:ServiceProxyController"
         m.connect(
-            'service_proxy.proxy_service',
+            "service_proxy.proxy_service",
             "/dataset/{id}/resource/{resource_id}/service_proxy",
             controller=controller,
             action="proxy_service",
         )
 
         m.connect(
-            'service_proxy.proxy_service_url',
+            "service_proxy.proxy_service_url",
             "/basemap_service/{map_id}",
             controller=controller,
             action="proxy_service_url",

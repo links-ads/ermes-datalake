@@ -25,9 +25,7 @@ class TestGroupSchemaLists(object):
 
     def test_organization_schema_show(self):
         lc = LocalCKAN("visitor")
-        schema = lc.action.scheming_organization_schema_show(
-            type="organization"
-        )
+        schema = lc.action.scheming_organization_schema_show(type="organization")
         assert schema["fields"][4]["label"] == "Department ID"
 
     def test_organization_schema_not_found(self):

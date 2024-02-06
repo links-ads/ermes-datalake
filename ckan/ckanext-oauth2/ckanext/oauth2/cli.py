@@ -2,10 +2,10 @@
 
 import click
 
+
 @click.group()
 def oauth2():
-    """Oauth2 management commands.
-    """
+    """Oauth2 management commands."""
     pass
 
 

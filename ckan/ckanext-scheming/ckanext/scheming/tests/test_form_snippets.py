@@ -5,11 +5,13 @@ from jinja2 import Markup
 
 import ckantoolkit
 
-if ckantoolkit.check_ckan_version(min_version='2.9.0'):
+if ckantoolkit.check_ckan_version(min_version="2.9.0"):
     from contextlib import contextmanager
+
     @contextmanager
     def mock_pylons_request():
         yield
+
 else:
     from ckanext.scheming.tests.mock_pylons_request import mock_pylons_request
 
@@ -19,26 +21,18 @@ def render_form_snippet(name, data=None, extra_args=None, **kwargs):
     field.update(kwargs)
     with mock_pylons_request():
         return render_snippet(
-            "scheming/form_snippets/" + name,
-            field=field,
-            data=data or {},
-            errors=None,
-            **(extra_args or {})
+            "scheming/form_snippets/" + name, field=field, data=data or {}, errors=None, **(extra_args or {})
         )
 
 
 @pytest.mark.usefixtures("with_request_context")
 class TestSelectFormSnippet(object):
     def test_choices_visible(self):
-        html = render_form_snippet(
-            "select.html", choices=[{"value": "one", "label": "One"}]
-        )
+        html = render_form_snippet("select.html", choices=[{"value": "one", "label": "One"}])
         assert '<option value="one">One</option>' in html
 
     def test_blank_choice_shown(self):
-        html = render_form_snippet(
-            "select.html", choices=[{"value": "two", "label": "Two"}]
-        )
+        html = render_form_snippet("select.html", choices=[{"value": "two", "label": "Two"}])
         assert '<option value="">' in html
 
     def test_no_blank_choice_on_required(self):
@@ -124,9 +118,7 @@ class TestOrganizationFormSnippet(object):
         html = render_form_snippet(
             "_organization_select.html",
             extra_args={
-                "organizations_available": [
-                    {"id": "1", "display_name": "One"}
-                ],
+                "organizations_available": [{"id": "1", "display_name": "One"}],
                 "organization_option_tag": organization_option_tag,
                 "org_required": False,
             },
@@ -137,9 +129,7 @@ class TestOrganizationFormSnippet(object):
         html = render_form_snippet(
             "_organization_select.html",
             extra_args={
-                "organizations_available": [
-                    {"id": "1", "display_name": "One"}
-                ],
+                "organizations_available": [{"id": "1", "display_name": "One"}],
                 "organization_option_tag": organization_option_tag,
                 "org_required": False,
             },
@@ -150,9 +140,7 @@ class TestOrganizationFormSnippet(object):
         html = render_form_snippet(
             "_organization_select.html",
             extra_args={
-                "organizations_available": [
-                    {"id": "1", "display_name": "One"}
-                ],
+                "organizations_available": [{"id": "1", "display_name": "One"}],
                 "organization_option_tag": organization_option_tag,
                 "org_required": True,
             },
@@ -164,9 +152,7 @@ class TestOrganizationFormSnippet(object):
             "_organization_select.html",
             form_include_blank_choice=True,
             extra_args={
-                "organizations_available": [
-                    {"id": "1", "display_name": "One"}
-                ],
+                "organizations_available": [{"id": "1", "display_name": "One"}],
                 "organization_option_tag": organization_option_tag,
                 "org_required": True,
             },
@@ -246,9 +232,7 @@ class TestJSONFormSnippet(object):
         assert expected in html
 
     def test_json_value_is_empty_with_no_value(self):
-        html = render_form_snippet(
-            "json.html", field_name="a_json_field", data={"a_json_field": ""}
-        )
+        html = render_form_snippet("json.html", field_name="a_json_field", data={"a_json_field": ""})
         expected = "></textarea>"
 
         assert expected in html

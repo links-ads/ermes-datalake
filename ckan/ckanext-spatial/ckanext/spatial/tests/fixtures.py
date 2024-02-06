@@ -43,7 +43,7 @@ except ImportError:
 
         """
         _original = config.copy()
-        for mark in request.node.iter_markers(u"ckan_config"):
+        for mark in request.node.iter_markers("ckan_config"):
             monkeypatch.setitem(config, *mark.args)
         yield config
         config.clear()
@@ -74,7 +74,7 @@ except ImportError:
         """
         return make_app()
 
-    @pytest.fixture(scope=u"session")
+    @pytest.fixture(scope="session")
     def reset_db():
         """Callable for resetting the database to the initial state.
 
@@ -83,7 +83,7 @@ except ImportError:
         """
         return test_helpers.reset_db
 
-    @pytest.fixture(scope=u"session")
+    @pytest.fixture(scope="session")
     def reset_index():
         """Callable for cleaning search index.
 
@@ -114,8 +114,7 @@ except ImportError:
 
     @pytest.fixture
     def clean_index(reset_index):
-        """Clear search index before starting the test.
-        """
+        """Clear search index before starting the test."""
         reset_index()
 
     @pytest.fixture
@@ -140,13 +139,11 @@ except ImportError:
 
     @pytest.fixture
     def test_request_context(app):
-        """Provide function for creating Flask request context.
-        """
+        """Provide function for creating Flask request context."""
         return app.flask_app.test_request_context
 
     @pytest.fixture
     def with_request_context(test_request_context):
-        """Execute test inside requests context
-        """
+        """Execute test inside requests context"""
         with test_request_context():
             yield

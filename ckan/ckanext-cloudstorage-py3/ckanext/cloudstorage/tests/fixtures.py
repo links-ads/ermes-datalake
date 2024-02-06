@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 try:
-    from ckan.tests.pytest_ckan.fixtures import * # NOQA
+    from ckan.tests.pytest_ckan.fixtures import *  # NOQA
 
 except ImportError:
     import pytest
@@ -46,7 +46,7 @@ except ImportError:
 
         """
         _original = config.copy()
-        for mark in request.node.iter_markers(u"ckan_config"):
+        for mark in request.node.iter_markers("ckan_config"):
             monkeypatch.setitem(config, *mark.args)
         yield config
         config.clear()
@@ -77,7 +77,7 @@ except ImportError:
         """
         return make_app()
 
-    @pytest.fixture(scope=u"session")
+    @pytest.fixture(scope="session")
     def reset_db():
         """Callable for resetting the database to the initial state.
 
@@ -86,7 +86,7 @@ except ImportError:
         """
         return test_helpers.reset_db
 
-    @pytest.fixture(scope=u"session")
+    @pytest.fixture(scope="session")
     def reset_index():
         """Callable for cleaning search index.
 
@@ -117,8 +117,7 @@ except ImportError:
 
     @pytest.fixture
     def clean_index(reset_index):
-        """Clear search index before starting the test.
-        """
+        """Clear search index before starting the test."""
         reset_index()
 
     @pytest.fixture
@@ -143,14 +142,12 @@ except ImportError:
 
     @pytest.fixture
     def test_request_context(app):
-        """Provide function for creating Flask request context.
-        """
+        """Provide function for creating Flask request context."""
         return app.flask_app.test_request_context
 
     @pytest.fixture
     def with_request_context(test_request_context):
-        """Execute test inside requests context
-        """
+        """Execute test inside requests context"""
         with test_request_context():
             yield
 
@@ -171,20 +168,21 @@ except ImportError:
                 assert resource["format"] == "TXT"
                 assert resource["size"] == 11
         """
-        monkeypatch.setitem(ckan_config, u'ckan.storage_path', str(tmpdir))
-        monkeypatch.setattr(ckan.lib.uploader, u'_storage_path', str(tmpdir))
+        monkeypatch.setitem(ckan_config, "ckan.storage_path", str(tmpdir))
+        monkeypatch.setattr(ckan.lib.uploader, "_storage_path", str(tmpdir))
 
         def factory(data, filename, context={}, **kwargs):
-            action = kwargs.pop(u"action", u"resource_create")
+            action = kwargs.pop("action", "resource_create")
             test_file = six.BytesIO()
             test_file.write(six.ensure_binary(data))
             test_file.seek(0)
             test_resource = FakeFileStorage(test_file, filename)
 
             params = {
-                u"url": u"http://data",
-                u"upload": test_resource,
+                "url": "http://data",
+                "upload": test_resource,
             }
             params.update(kwargs)
             return test_helpers.call_action(action, context, **params)
+
         return factory

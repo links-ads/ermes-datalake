@@ -18,9 +18,7 @@ class ServiceProxyController(base.BaseController):
             "session": base.model.Session,
             "user": base.c.user or base.c.author,
         }
-        return utils.proxy_service_resource(
-            self._py_object.request, context, data_dict
-        )
+        return utils.proxy_service_resource(self._py_object.request, context, data_dict)
 
     def proxy_service_url(self, map_id):
         url = base.config.get("ckanext.spatial.common_map." + map_id + ".url")

@@ -1,8 +1,13 @@
 import os
 import logging
 from ckan.authz import Authorizer
-from ckan.logic.converters import convert_to_extras,\
-    convert_from_extras, convert_to_tags, convert_from_tags, free_tags_only
+from ckan.logic.converters import (
+    convert_to_extras,
+    convert_from_extras,
+    convert_to_tags,
+    convert_from_tags,
+    free_tags_only,
+)
 from ckan.logic import get_action, NotFound
 from ckan.logic.schema import package_form_schema, group_form_schema
 from ckan.lib.base import c, model
@@ -14,8 +19,8 @@ import ckan.lib.plugins
 
 log = logging.getLogger(__name__)
 
-GENRE_VOCAB = u'genre_vocab'
-COMPOSER_VOCAB = u'composer_vocab'
+GENRE_VOCAB = "genre_vocab"
+COMPOSER_VOCAB = "composer_vocab"
 
 
 class authcheckGroupForm(SingletonPlugin):
@@ -35,6 +40,7 @@ class authcheckGroupForm(SingletonPlugin):
         'type' matches one of the values in group_types then this
         class will be used.
     """
+
     implements(IGroupForm, inherit=True)
     implements(IConfigurer, inherit=True)
 
@@ -45,17 +51,15 @@ class authcheckGroupForm(SingletonPlugin):
         """
         here = os.path.dirname(__file__)
         rootdir = os.path.dirname(os.path.dirname(here))
-        template_dir = os.path.join(rootdir, 'ckanext',
-                                    'authcheck', 'theme', 'templates')
-        config['extra_template_paths'] = ','.join([template_dir,
-                config.get('extra_template_paths', '')])
+        template_dir = os.path.join(rootdir, "ckanext", "authcheck", "theme", "templates")
+        config["extra_template_paths"] = ",".join([template_dir, config.get("extra_template_paths", "")])
 
     def group_form(self):
         """
         Returns a string representing the location of the template to be
         rendered.  e.g. "forms/group_form.html".
         """
-        return 'forms/group_form.html'
+        return "forms/group_form.html"
 
     def group_types(self):
         """
@@ -121,6 +125,7 @@ class authcheckDatasetForm(SingletonPlugin, ckan.lib.plugins.DefaultDatasetForm)
         type_name matches one of the values in package_types then this
         class will be used.
     """
+
     implements(IDatasetForm, inherit=True)
     implements(IConfigurer, inherit=True)
     implements(IGenshiStreamFilter, inherit=True)
@@ -132,17 +137,15 @@ class authcheckDatasetForm(SingletonPlugin, ckan.lib.plugins.DefaultDatasetForm)
         """
         here = os.path.dirname(__file__)
         rootdir = os.path.dirname(os.path.dirname(here))
-        template_dir = os.path.join(rootdir, 'ckanext',
-                                    'authcheck', 'theme', 'templates')
-        config['extra_template_paths'] = ','.join([template_dir,
-                config.get('extra_template_paths', '')])
+        template_dir = os.path.join(rootdir, "ckanext", "authcheck", "theme", "templates")
+        config["extra_template_paths"] = ",".join([template_dir, config.get("extra_template_paths", "")])
 
     def package_form(self):
         """
         Returns a string representing the location of the template to be
         rendered.  e.g. "package/new_package_form.html".
         """
-        return 'forms/dataset_form.html'
+        return "forms/dataset_form.html"
 
     def is_fallback(self):
         """
@@ -172,22 +175,21 @@ class authcheckDatasetForm(SingletonPlugin, ckan.lib.plugins.DefaultDatasetForm)
         Adds variables to c just prior to the template being rendered that can
         then be used within the form
         """
-        c.licences = [('', '')] + model.Package.get_license_options()
-        c.publishers = [('authcheck publisher', 'authcheck publisher 2')]
+        c.licences = [("", "")] + model.Package.get_license_options()
+        c.publishers = [("authcheck publisher", "authcheck publisher 2")]
         c.is_sysadmin = Authorizer().is_sysadmin(c.user)
         c.resource_columns = model.Resource.get_columns()
         try:
-            c.genre_tags = get_action('tag_list')(context, {'vocabulary_id': GENRE_VOCAB})
-            c.composer_tags = get_action('tag_list')(context, {'vocabulary_id': COMPOSER_VOCAB})
+            c.genre_tags = get_action("tag_list")(context, {"vocabulary_id": GENRE_VOCAB})
+            c.composer_tags = get_action("tag_list")(context, {"vocabulary_id": COMPOSER_VOCAB})
         except NotFound:
             c.vocab_tags = None
             c.composer_tags = None
 
         ## This is messy as auths take domain object not data_dict
-        pkg = context.get('package') or c.pkg
+        pkg = context.get("package") or c.pkg
         if pkg:
-            c.auth_for_change_state = Authorizer().am_authorized(
-                c, model.Action.CHANGE_STATE, pkg)
+            c.auth_for_change_state = Authorizer().am_authorized(c, model.Action.CHANGE_STATE, pkg)
 
     def form_to_db_schema(self):
         """
@@ -195,11 +197,13 @@ class authcheckDatasetForm(SingletonPlugin, ckan.lib.plugins.DefaultDatasetForm)
         suitable for the database.
         """
         schema = package_form_schema()
-        schema.update({
-            'published_by': [ignore_missing, unicode, convert_to_extras],
-            'genre_tags': [ignore_missing, convert_to_tags(GENRE_VOCAB)],
-            'composer_tags': [ignore_missing, convert_to_tags(COMPOSER_VOCAB)]
-        })
+        schema.update(
+            {
+                "published_by": [ignore_missing, unicode, convert_to_extras],
+                "genre_tags": [ignore_missing, convert_to_tags(GENRE_VOCAB)],
+                "composer_tags": [ignore_missing, convert_to_tags(COMPOSER_VOCAB)],
+            }
+        )
         return schema
 
     def db_to_form_schema(self):
@@ -208,22 +212,15 @@ class authcheckDatasetForm(SingletonPlugin, ckan.lib.plugins.DefaultDatasetForm)
         format suitable for the form (optional)
         """
         schema = package_form_schema()
-        schema.update({
-            'tags': {
-                '__extras': [keep_extras, free_tags_only]
-            },
-            'genre_tags_selected': [
-                convert_from_tags(GENRE_VOCAB), ignore_missing
-            ],
-            'composer_tags_selected': [
-                convert_from_tags(COMPOSER_VOCAB), ignore_missing
-            ],
-            'published_by': [convert_from_extras, ignore_missing],
-        })
-        schema['groups'].update({
-            'name': [not_empty, unicode],
-            'title': [ignore_missing]
-        })
+        schema.update(
+            {
+                "tags": {"__extras": [keep_extras, free_tags_only]},
+                "genre_tags_selected": [convert_from_tags(GENRE_VOCAB), ignore_missing],
+                "composer_tags_selected": [convert_from_tags(COMPOSER_VOCAB), ignore_missing],
+                "published_by": [convert_from_extras, ignore_missing],
+            }
+        )
+        schema["groups"].update({"name": [not_empty, unicode], "title": [ignore_missing]})
         return schema
 
     def check_data_dict(self, data_dict):
@@ -237,31 +234,28 @@ class authcheckDatasetForm(SingletonPlugin, ckan.lib.plugins.DefaultDatasetForm)
         from pylons import request
         from genshi.filters import Transformer
         from genshi.input import HTML
-        routes = request.environ.get('pylons.routes_dict')
-        context = {'model': model}
-        if routes.get('controller') == 'package' \
-            and routes.get('action') == 'read':
-                for vocab in (GENRE_VOCAB, COMPOSER_VOCAB):
-                    try:
-                        vocab = get_action('vocabulary_show')(context, {'id': vocab})
-                        vocab_tags = [t for t in c.pkg_dict.get('tags', [])
-                                      if t.get('vocabulary_id') == vocab['id']]
-                    except NotFound:
-                        vocab_tags = None
 
-                    if not vocab_tags:
-                        continue
+        routes = request.environ.get("pylons.routes_dict")
+        context = {"model": model}
+        if routes.get("controller") == "package" and routes.get("action") == "read":
+            for vocab in (GENRE_VOCAB, COMPOSER_VOCAB):
+                try:
+                    vocab = get_action("vocabulary_show")(context, {"id": vocab})
+                    vocab_tags = [t for t in c.pkg_dict.get("tags", []) if t.get("vocabulary_id") == vocab["id"]]
+                except NotFound:
+                    vocab_tags = None
 
-                    html = '<li class="sidebar-section">'
-                    if vocab['name'] == GENRE_VOCAB:
-                        html = html + '<h3>Musical Genre</h3>'
-                    elif vocab['name'] == COMPOSER_VOCAB:
-                        html = html + '<h3>Composer</h3>'
-                    html = html + '<ul class="tags clearfix">'
-                    for tag in vocab_tags:
-                        html = html + '<li>%s</li>' % tag['name']
-                    html = html + "</ul></li>"
-                    stream = stream | Transformer(
-                        "//div[@id='sidebar']//ul[@class='widget-list']"
-                    ).append(HTML(html))
+                if not vocab_tags:
+                    continue
+
+                html = '<li class="sidebar-section">'
+                if vocab["name"] == GENRE_VOCAB:
+                    html = html + "<h3>Musical Genre</h3>"
+                elif vocab["name"] == COMPOSER_VOCAB:
+                    html = html + "<h3>Composer</h3>"
+                html = html + '<ul class="tags clearfix">'
+                for tag in vocab_tags:
+                    html = html + "<li>%s</li>" % tag["name"]
+                html = html + "</ul></li>"
+                stream = stream | Transformer("//div[@id='sidebar']//ul[@class='widget-list']").append(HTML(html))
         return stream

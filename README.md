@@ -51,15 +51,7 @@ To run the containers:
 
 1. Clone this repository
 2. `cd datacatalog`
-3. `docker compose build`
-4. `docker compose up -d`
-5. You can follow the log stream running `docker-compose logs -f` (then ctrl+c to exit).
-
-## Development
-To run the containers in dev mode (enabling CKAN `DEBUG` logs):
-
-1. `docker compose -f docker-compose.yml -f docker-compose.dev.yml build`
-2. `docker compose -f docker-compose.yml -f docker-compose.dev.yml up`
+3. `make up TARGET=dev|prod ARGS=--build` [dev enables CKAN `DEBUG` logs and automatic reload of CKAN instance upon any code change]
 
 ## Credentials
 After a while you can open the CKAN home [http://localhost:5001](http://localhost:5001) and login with the credentials set in the `env/.env` file. If you are using the plugin oauth2 the login page will be the one speciefied in the env file.

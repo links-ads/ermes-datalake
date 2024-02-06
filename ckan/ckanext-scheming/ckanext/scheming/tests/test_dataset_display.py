@@ -12,9 +12,7 @@ class TestDatasetDisplay(object):
             type="test-schema",
             name="set-one",
             humps=3,
-            resources=[
-                {"url": "http://example.com/camel.txt", "camels_in_photo": 2}
-            ],
+            resources=[{"url": "http://example.com/camel.txt", "camels_in_photo": 2}],
         )
 
         response = app.get("/dataset/set-one")
@@ -36,9 +34,7 @@ class TestDatasetDisplay(object):
             ],
         )
 
-        response = app.get(
-            "/dataset/set-two/resource/" + d["resources"][0]["id"]
-        )
+        response = app.get("/dataset/set-two/resource/" + d["resources"][0]["id"])
         assert "Camels in Photo" in response.body
         assert "Date" in response.body
 
@@ -76,10 +72,7 @@ class TestDatasetDisplay(object):
 
         response = app.get("/dataset/with-multiple-choice-n")
 
-        assert (
-            "<ul><li>Often friendly</li><li>Tends to spit</li></ul>"
-            in response.body
-        )
+        assert "<ul><li>Often friendly</li><li>Tends to spit</li></ul>" in response.body
 
     def test_choice_field_does_not_show_list_if_one_options(self, app):
         user = Sysadmin()
@@ -109,9 +102,7 @@ class TestDatasetDisplay(object):
             expected = """{\n  "a": "1",\n  "b": "2"\n}"""
         else:
             expected = """{\n  "a": "1", \n  "b": "2"\n}"""
-        expected = expected.replace(
-            '"', "&#34;"
-        )  # Ask webhelpers
+        expected = expected.replace('"', "&#34;")  # Ask webhelpers
 
         assert expected in response.body
         assert "Example JSON" in response.body
