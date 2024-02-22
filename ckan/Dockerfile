@@ -1,4 +1,4 @@
-FROM ckan/ckan:2.9.10
+FROM ckan/ckan-base:2.9.10
 
 LABEL maintainer='federico.oldani@linksfoundation.com'
 
